@@ -8,6 +8,6 @@ Format: latex
 Files: /usr/share/doc/yapps2/yapps2.tex.gz
 
 Format: HTML
-Index: /usr/share/doc/yapps2/html/index.html
-Files: /usr/share/doc/yapps2/html/*.html
+Index: /usr/share/doc/yapps2/yapps2.html
+Files: /usr/share/doc/yapps2/yapps2.html
 

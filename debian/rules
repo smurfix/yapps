@@ -36,7 +36,9 @@ build-stamp: configure-stamp
 	# Add here commands to compile the package.
 	python setup.py build
 	#/usr/bin/docbook-to-man debian/yapps2.sgml > yapps.1
-	cd doc && latex2html yapps2.tex
+	#cd doc && latex2html yapps2.tex
+	cd doc && hevea yapps2.tex
+	cd doc && hevea yapps2.tex # twice because of TOC
 
 	touch build-stamp
 
@@ -59,7 +61,7 @@ install: build
 	# Add here commands to install the package into debian/yapps.
 	python setup.py install --root=$(shell pwd)/debian/yapps2 --no-compile --install-purelib=/usr/lib/site-python
 	install -m 755 yapps2.py debian/yapps2/usr/bin/yapps
-	install -m 755 doc/yapps2/* debian/yapps2/usr/share/doc/yapps2/html/
+	install -m 755 doc/yapps2.html debian/yapps2/usr/share/doc/yapps2/
 
 
 # Build architecture-independent files here.

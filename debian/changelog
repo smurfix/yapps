@@ -1,3 +1,9 @@
+yapps2 (2.1.1-13) unstable; urgency=low
+
+  * latex2html => hevea
+
+ -- Matthias Urlichs <smurf@debian.org>  Mon, 19 Jul 2004 09:29:17 +0200
+
 yapps2 (2.1.1-12) unstable; urgency=low
 
   * Build-Depend on python.
