@@ -602,6 +602,13 @@ class Option(Wrapper):
         gen.write(indent, "if %s:\n" %
                   gen.peek_test(self.first, self.child.first))
         self.child.output(gen, indent+INDENT)
+
+        if gen.has_option('context-insensitive-scanner'):
+            gen.write(indent, "if %s:\n" %
+                    gen.not_peek_test(gen.non_ignored_tokens(), self.follow))
+            gen.write(indent+INDENT, "raise yappsrt.SyntaxError(pos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(%s))\n" %
+                    repr(self.first))
+
         
 class Plus(Wrapper):
     """This class represents a 1-or-more repetition clause of the form A+"""
@@ -629,6 +636,13 @@ class Plus(Wrapper):
         gen.write(indent+INDENT, "if %s: break\n" %
                   gen.not_peek_test(union, self.child.first))
 
+        if gen.has_option('context-insensitive-scanner'):
+            gen.write(indent, "if %s:\n" %
+                    gen.not_peek_test(gen.non_ignored_tokens(), self.follow))
+            gen.write(indent+INDENT, "raise yappsrt.SyntaxError(pos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(%s))\n" %
+                    repr(self.first))
+
+
 class Star(Wrapper):
     """This class represents a 0-or-more repetition clause of the form A*"""
     def setup(self, gen):
@@ -653,9 +667,9 @@ class Star(Wrapper):
         self.child.output(gen, indent+INDENT)
 
         # TODO: need to generate tests like this in lots of rules
-        # TODO: do we need to do this only when it's a context-insensitive scanner?
-        gen.write(indent, "if %s:\n" %
-                  gen.not_peek_test(gen.non_ignored_tokens(), self.follow))
-        gen.write(indent+INDENT, "raise yappsrt.SyntaxError(pos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(%s))\n" %
-                  repr(self.first))
+        if gen.has_option('context-insensitive-scanner'):
+            gen.write(indent, "if %s:\n" %
+                    gen.not_peek_test(gen.non_ignored_tokens(), self.follow))
+            gen.write(indent+INDENT, "raise yappsrt.SyntaxError(pos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(%s))\n" %
+                    repr(self.first))
 
