@@ -6,13 +6,18 @@ def lookup(map, name):
     if not globalvars.has_key(name): print 'Undefined (defaulting to 0):', name
     return globalvars.get(name, 0)
 
+def stack_input(scanner,ign):
+    """Grab more input"""
+    scanner.stack_input(raw_input(">?> "))
+
 %%
 parser Calculator:
     ignore:    "[ \r\t\n]+"
+    ignore:    "[?]"         {{ stack_input }}
+
     token END: "$"
     token NUM: "[0-9]+"
     token VAR: "[a-zA-Z_]+"
-    token READ: "[?]"
 
     # Each line can either be an expression or an assignment statement
     rule goal:   expr<<[]>> END            {{ print '=', expr }}
@@ -38,8 +43,6 @@ parser Calculator:
                  NUM                      {{ return int(NUM) }}
                | VAR                      {{ return lookup(V, VAR) }}
                | "\\(" expr "\\)"         {{ return expr }}
-			   | READ                     {{ self._stack(raw_input(">?> ")) }}
-			     term                     {{ return term }}
                | "let" VAR "=" expr<<V>>  {{ V = [(VAR, expr)] + V }}
                  "in" expr<<V>>           {{ return expr }}
 %%
@@ -54,7 +57,7 @@ if __name__=='__main__':
     # one expression, get the result, enter another expression, etc.)
     while 1:
         try: s = raw_input('>>> ')
-	except EOFError: break
+        except EOFError: break
         if not s.strip(): break
         parse('goal', s)
     print 'Bye.'

@@ -76,7 +76,10 @@ parser ParserDescription:
     rule Tokens:  {{ tok = [] }}
                   (
                     "token" ID ":" Str {{ tok.append( (ID,Str) ) }}
-                  | "ignore"   ":" Str {{ tok.append( ('#ignore',Str) ) }}
+                  | "ignore"  
+				    ":" Str {{ ign = ('#ignore',Str) }}
+				    ( STMT  {{ ign = ign + (STMT[2:-2],) }} )?
+				            {{ tok.append( ign ) }}
                   )*
                   {{ return tok }}
 

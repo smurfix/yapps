@@ -35,12 +35,18 @@ class Generator:
         self.postparser = None
         
         self.tokens = {} # Map from tokens to regexps
-        self.ignore = [] # List of token names to ignore in parsing
+        self.ignore = {} # List of token names to ignore in parsing, map to statements
         self.terminals = [] # List of token names (to maintain ordering)
-        for n, t in tokens:
+        for t in tokens:
+            if len(t) == 3:
+                n,t,s = t
+            else:
+                n,t = t
+                s = None
+
             if n == '#ignore':
                 n = t
-                self.ignore.append(n)
+                self.ignore[n] = s
             if n in self.tokens.keys() and self.tokens[n] != t:
                 print >>sys.stderr, 'Warning: token %s defined more than once.' % n
             self.tokens[n] = t
@@ -199,7 +205,9 @@ class Generator:
         a_set = (repr(a)[1:-1])
         if self.equal_set(a, self.non_ignored_tokens()): a_set = ''
         if self.has_option('context-insensitive-scanner'): a_set = ''
-        return 'self._peek(%s)' % a_set
+        if a_set: a_set += ","
+        
+        return 'self._peek(%s context=_context)' % a_set
     
     def peek_test(self, a, b):
         """Generate a call to test whether the next token (which could be any of
@@ -252,6 +260,14 @@ class Generator:
                 print '    FOLLOW:', ', '.join(top.follow)
                 for x in top.get_children(): queue.append(x)
                 
+    def repr_ignore(self):
+        out="{"
+        for t,s in self.ignore.iteritems():
+            if s is None: s=repr(s)
+            out += "%s:%s," % (repr(t),s)
+        out += "}"
+        return out
+        
     def generate_output(self):
         self.calculate()
         self.write(self.preparser)
@@ -267,7 +283,7 @@ class Generator:
         self.write("    ]\n")
         self.write("    def __init__(self, str):\n")
         self.write("        yappsrt.Scanner.__init__(self,None,%s,str)\n" %
-                   repr(self.ignore))
+                   self.repr_ignore())
         self.write("\n")
         
         self.write("class ", self.name, "(yappsrt.Parser):\n")
@@ -355,7 +371,7 @@ class Terminal(Node):
         gen.write(indent)
         if re.match('[a-zA-Z_][a-zA-Z_0-9]*$', self.token):
             gen.write(self.token, " = ")
-        gen.write("self._scan(%s)\n" % repr(self.token))
+        gen.write("self._scan(%s, context=_context)\n" % repr(self.token))
         
 class Eval(Node):
     """This class stores evaluation nodes, from {{ ... }} clauses."""
