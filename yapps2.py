@@ -45,7 +45,7 @@ def generate(inputfilename, outputfilename='', dump=0, **flags):
 
     parser = grammar.ParserDescription(scanner)
     t = runtime.wrap_error_reporter(parser, 'Parser')
-    if t is None: return # Failure
+    if t is None: return 1 # Failure
     if preparser is not None: t.preparser = preparser
     if postparser is not None: t.postparser = postparser
 
@@ -64,6 +64,7 @@ def generate(inputfilename, outputfilename='', dump=0, **flags):
     else:
         t.output = open(outputfilename, 'w')
         t.generate_output()
+    return 0
 
 if __name__ == '__main__':
     import doctest
@@ -109,4 +110,4 @@ if __name__ == '__main__':
         else:
             from yapps import grammar
             
-        generate(*tuple(args), **flags)
+        sys.exit(generate(*tuple(args), **flags))

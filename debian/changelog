@@ -1,3 +1,9 @@
+yapps (2.1.1-7) unstable; urgency=low
+
+  * Change yapps.py t exit 1 on failure to parse
+
+ -- Matthias Urlichs <smurf@debian.org>  Wed, 31 Dec 2003 13:57:38 +0100
+
 yapps (2.1.1-6) unstable; urgency=low
 
   * Update to 3.6.1, use build-depends-indep.
