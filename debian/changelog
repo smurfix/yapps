@@ -1,3 +1,9 @@
+yapps2 (2.1.1-15) unstable; urgency=medium
+
+  * Add support for Python 2.4.
+
+ -- Matthias Urlichs <smurf@debian.org>  Sun, 12 Dec 2004 20:20:18 +0100
+
 yapps2 (2.1.1-14) unstable; urgency=medium
 
   * Split off the Python parser runtime into its own package
