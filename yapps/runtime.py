@@ -81,7 +81,7 @@ class Scanner(object):
 
         Parameters:
           patterns : [(terminal, uncompiled regex), ...] or None
-          ignore : [terminal:x,...]
+          ignore : {terminal:None, ...}
           input : string
 
         If patterns is None, we assume that the subclass has
@@ -261,6 +261,7 @@ class Scanner(object):
             # tokens in the list having preference
             best_match = -1
             best_pat = '(error)'
+	    best_m = None
             for p, regexp in self.patterns:
                 # First check to see if we're ignoring this token
                 if restrict and p not in restrict and p not in self.ignore:
@@ -270,6 +271,7 @@ class Scanner(object):
                     # We got a match that's better than the previous one
                     best_pat = p
                     best_match = m.end()-m.start()
+		    best_m = m
                     
             # If we didn't find anything, raise an error
             if best_pat == '(error)' and best_match < 0:
@@ -303,7 +305,7 @@ class Scanner(object):
             else:
                 ignore = self.ignore[best_pat]
                 if ignore:
-                    ignore(self, m)
+                    ignore(self, best_m)
 
     def peek(self, *types, **kw):
         """Returns the token type for lookahead; if there are any args
