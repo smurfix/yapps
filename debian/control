@@ -1,0 +1,19 @@
+Source: yapps
+Section: python
+Priority: optional
+Maintainer: Matthias Urlichs <smurf@debian.org>
+Build-Depends: debhelper (>= 4.0.0), python (>= 2.2)
+Standards-Version: 3.6.0
+
+Package: python-yapps
+Architecture: all
+Depends: python (>= 2.2), python (<< 2.4)
+Description: Yet Another Python Parser System
+ This module implements a recursive-descent parser in pure Python.
+ .
+ The parser is specified in EBNF grammar with embedded Python
+ statements. Yapps' ooutput is a python module which interprets the
+ specified grammar.
+ .
+ Unlike other systems, it is not necessary to keep the whole
+ file-to-be-parsed in memory. It is possible to handle include files.

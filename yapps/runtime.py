@@ -1,4 +1,3 @@
-#
 # Yapps 2 Runtime, part of Yapps 2 - yet another python parser system
 # Copyright 1999-2003 by Amit J. Patel <amitp@cs.stanford.edu>
 #

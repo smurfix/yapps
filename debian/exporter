@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -e
+
+test -n "$1"
+test -z "$3"
+if test -z "$2" ; then T="+"; else T="$2"; fi
+D="$1"
+
+bk changes -v -r1.0..$T > "$D"/changelog

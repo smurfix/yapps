@@ -1,0 +1,15 @@
+yapps (2.1.1-1) unstable; urgency=low
+
+  * Initial Debian packaging.
+
+ -- Matthias Urlichs <smurf@debian.org>  Mon, 29 Dec 2003 17:13:59 +0100
+
+yapps (2.1.1-0) unstable; urgency=low
+
+  * Lots of local changes. See ChangeLog.gz for details.
+
+ -- Matthias Urlichs <smurf@debian.org>  Mon, 29 Dec 2003 17:13:59 +0100
+
+Local variables:
+mode: debian-changelog
+End:

@@ -1,0 +1,5 @@
+usr/bin
+usr/lib/site-python
+usr/share/doc/python-yapps
+usr/share/lintian/overrides
+usr/share/linda/overrides

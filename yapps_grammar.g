@@ -43,7 +43,6 @@ def resolve_name(rule, tokens, id, args):
 
 %%
 parser ParserDescription:
-    option:      "context-insensitive-scanner"
 
     ignore:      "[ \t\r\n]+"
     ignore:      "#.*?\r?\n"

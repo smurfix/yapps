@@ -1,0 +1,58 @@
+.\" $Revision: 1.5 $
+.TH YAPPS 1
+.SH NAME
+yapps \- create a Python module from a grammar file
+.SH SYNOPSIS
+.B yapps 
+[
+.B \--dump
+]
+[
+.B \--use-devel-grammar
+]
+[
+.B \-fcontext-insensitive-scanner
+]
+[
+.BI \-p
+.BI " pid"
+]
+[
+.BI \-f
+]
+input.g
+[
+.BI output.py
+]
+.BI " name"
+.SH DESCRIPTION
+
+  --dump                           Dump out grammar information
+    --use-devel-grammar              Use the devel grammar parser from
+	yapps_grammar.py instead of the stable grammar from grammar.py
+	  -fcontext-insensitive-scanner    Scan all tokens (see docs)
+
+.I yapps
+generates a Python program which will parse a given grammar.
+.PP
+.SH OPTIONS
+.TP
+.B \-\-dump
+Dump the grammar information to stdout.
+.TP
+.B \-\-use\-devel\-grammar
+Use the grammar file in ./yapps_grammar.py instead of yapps/grammar.py.
+.br
+This option is useful for testing new grammar parsers. (Yes, yapps'
+parser is itself written with yapps...)
+.TP
+.B \-fcontext\-insensitive\-scanner
+Set the option to use the non-context-sensitive scanner.
+.SH CAVEATS
+.I yapps
+implements a recursive-descent scanner.
+.SH HISTORY
+Written by Amit J. Patel <amitp@cs.stanford.edu>.
+.br
+This version was hacked extensively by Matthias Urlichs <smurf@debian.org>.
+See the change log for details.

@@ -1,5 +1,3 @@
-#!/usr/bin/python2
-#
 # parsetree.py, part of Yapps 2 - yet another python parser system
 # Copyright 1999-2003 by Amit J. Patel <amitp@cs.stanford.edu>
 #
