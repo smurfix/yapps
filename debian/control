@@ -1,19 +1,27 @@
-Source: yapps
+Source: yapps2
 Section: python
 Priority: optional
 Maintainer: Matthias Urlichs <smurf@debian.org>
-Build-Depends-Indep: debhelper (>= 4.0.0), python-dev (>= 2.2)
+Build-Depends-Indep: debhelper (>= 4.1), python-dev (>= 2.2)
 Standards-Version: 3.6.1
 
-Package: python-yapps
+Package: yapps2
 Architecture: all
-Depends: python (>= 2.2), python (<< 2.4)
+Depends: python (>= 2.2), python (<< 2.4), ${python:Depends}
 Description: Yet Another Python Parser System
- This module implements a recursive-descent parser in pure Python.
+ YAPPS is an easy to use parser generator that is written in Python and
+ generates Python code.  There are several parser generator systems
+ already available for Python, but this parser has different goals:
+ Yapps is simple, very easy to use, and produces human-readable parsers.
  .
- The parser is specified in EBNF grammar with embedded Python
- statements. Yapps' ooutput is a python module which interprets the
- specified grammar.
+ It is not the fastest or most powerful parser.  Yapps is designed to be
+ used when regular expressions are not enough and other parser systems
+ are too much: situations where you might otherwise write your own
+ recursive descent parser.
  .
- Unlike other systems, it is not necessary to keep the whole
- file-to-be-parsed in memory. It is possible to handle include files.
+ This package contains several upward-compatible enhancements to the
+ original YAPPS source:
+ - Handle stacked input ("include files")
+ - augmented ignore-able patterns (can parse multi-line C comments correctly)
+ - better error reporting
+ - read input incrementally

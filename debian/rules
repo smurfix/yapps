@@ -35,7 +35,7 @@ build-stamp: configure-stamp
 
 	# Add here commands to compile the package.
 	python setup.py build
-	#/usr/bin/docbook-to-man debian/yapps.sgml > yapps.1
+	#/usr/bin/docbook-to-man debian/yapps2.sgml > yapps.1
 
 	touch build-stamp
 
@@ -44,7 +44,7 @@ clean:
 	dh_testroot
 	rm -f build-stamp configure-stamp
 
-	rm -rf build debian/python-yapps
+	rm -rf build debian/yapps2
 	test -f changelog || bk changes > changelog
 
 	dh_clean 
@@ -56,10 +56,10 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/yapps.
-	python setup.py install --root=$(shell pwd)/debian/python-yapps --no-compile --install-purelib=/usr/lib/site-python
-	install -m 755 yapps2.py debian/python-yapps/usr/bin/yapps
-	install -m 644 debian/overrides.lintian debian/python-yapps/usr/share/lintian/overrides/python-yapps
-	install -m 644 debian/overrides.linda debian/python-yapps/usr/share/linda/overrides/python-yapps
+	python setup.py install --root=$(shell pwd)/debian/yapps2 --no-compile --install-purelib=/usr/lib/site-python
+	install -m 755 yapps2.py debian/yapps2/usr/bin/yapps
+	install -m 644 debian/overrides.lintian debian/yapps2/usr/share/lintian/overrides/yapps2
+	install -m 644 debian/overrides.linda debian/yapps2/usr/share/linda/overrides/yapps2
 
 
 # Build architecture-independent files here.
@@ -75,8 +75,8 @@ binary-arch: build install
 	dh_installexamples examples/* test yapps_grammar.g
 	dh_installman debian/yapps.1
 	dh_compress
-	dh_compress usr/share/doc/python-yapps/NOTES
-	dh_compress usr/share/doc/python-yapps/LICENSE
+	dh_compress usr/share/doc/yapps2/NOTES
+	dh_compress usr/share/doc/yapps2/LICENSE
 	dh_fixperms
 #	dh_perl
 #	dh_python
