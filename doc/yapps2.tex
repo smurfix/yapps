@@ -1177,6 +1177,27 @@ Yapps 2 addresses each of these limitations.
 It is my hope that Yapps 2 will be flexible enough to meet my needs
 for another year, yet simple enough that I do not hesitate to use it.
 
+\mysection{Debian Extensions}
+\label{sec:debian}
+
+The Debian version adds the following enhancements to the original
+Yapps code. They were written by Matthias Urlichs.
+
+\begin{enumerate}
+ \item Yapps can stack input sources ("include files"). A usage example
+ is supplied with the calc.g sample program.
+ \item Yapps now understands augmented ignore-able patterns.
+  This means that Yapps can parse multi-line C comments; this wasn't
+  possible before.
+ \item Better error reporting.
+ \item Yapps now reads its input incrementally.
+\end{enumerate}
+
+The generated parser has been renamed to \texttt{yapps/runtime.py}.
+In Debian, this file is provided by the \texttt{yapps2-runtime} package.
+You need to depend on it if you Debianize Python programs which use
+yapps.
+
 \mysection{Future Extensions}
 \label{sec:future}
 

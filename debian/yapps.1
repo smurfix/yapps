@@ -5,13 +5,13 @@ yapps \- create a Python module from a grammar file
 .SH SYNOPSIS
 .B yapps 
 [
-.B \--dump
+.B \-\-dump
 ]
 [
-.B \--use-devel-grammar
+.B \-\-use\-devel\-grammar
 ]
 [
-.B \-fcontext-insensitive-scanner
+.B \-fcontext\-insensitive\-scanner
 ]
 [
 .BI \-p
@@ -27,10 +27,10 @@ input.g
 .BI " name"
 .SH DESCRIPTION
 
-  --dump                           Dump out grammar information
-    --use-devel-grammar              Use the devel grammar parser from
+  \-\-dump                           Dump out grammar information
+    \-\-use\-devel\-grammar              Use the devel grammar parser from
 	yapps_grammar.py instead of the stable grammar from grammar.py
-	  -fcontext-insensitive-scanner    Scan all tokens (see docs)
+	  \-fcontext\-insensitive\-scanner    Scan all tokens (see docs)
 
 .I yapps
 generates a Python program which will parse a given grammar.
@@ -47,12 +47,17 @@ This option is useful for testing new grammar parsers. (Yes, yapps'
 parser is itself written with yapps...)
 .TP
 .B \-fcontext\-insensitive\-scanner
-Set the option to use the non-context-sensitive scanner.
+Set the option to use the non\-context\-sensitive scanner.
 .SH CAVEATS
 .I yapps
-implements a recursive-descent scanner.
+implements a recursive\-descent scanner.
 .SH HISTORY
 Written by Amit J. Patel <amitp@cs.stanford.edu>.
 .br
-This version was hacked extensively by Matthias Urlichs <smurf@debian.org>.
+This version was enhanced by Matthias Urlichs <smurf@debian.org>.
+It is
+.B not
+downwards-compatible with the original yapps2 (yet) and uses a different
+runtime library.
+.br
 See the change log for details.

@@ -4,6 +4,8 @@ yapps2 (2.1.1-14) unstable; urgency=medium
     + sort-of Closes: #272738: Generated python files import yapps.runtime
                                instead of yappsrt
       - can't use yappsrt; it's not downward-compatible
+  * too many (i.e. more than zero) unquoted hyphens in the manpage
+  * update documentation that this is an enhanced version
 
  -- Matthias Urlichs <smurf@debian.org>  Thu, 23 Sep 2004 10:44:41 +0200
 
