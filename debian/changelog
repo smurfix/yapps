@@ -1,3 +1,9 @@
+yapps2 (2.1.1-17) unstable; urgency=medium
+
+  * Fix recursive includes.
+
+ -- Matthias Urlichs <smurf@debian.org>  Sat, 22 Jan 2005 03:03:51 +0100
+
 yapps2 (2.1.1-16) unstable; urgency=medium
 
   * Brown paper bag -- fix Python 2.4 stuff.
