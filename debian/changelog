@@ -1,3 +1,9 @@
+yapps2 (2.1.1-12) unstable; urgency=low
+
+  * Build-Depend on python.
+
+ -- Matthias Urlichs <smurf@debian.org>  Mon, 12 Jul 2004 09:35:29 +0200
+
 yapps2 (2.1.1-11) unstable; urgency=low
 
   * Typo (made large file handling slow)

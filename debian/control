@@ -2,7 +2,7 @@ Source: yapps2
 Section: python
 Priority: optional
 Maintainer: Matthias Urlichs <smurf@debian.org>
-Build-Depends-Indep: debhelper (>= 4.1), python-dev (>= 2.2), latex2html
+Build-Depends-Indep: debhelper (>= 4.1), python, python-dev (>= 2.2), latex2html
 Standards-Version: 3.6.1
 
 Package: yapps2
