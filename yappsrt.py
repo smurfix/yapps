@@ -19,23 +19,51 @@ keeps track of the parse stack.
 
 import sys, re
 
+MIN_WINDOW=4096
+# File lookup window
+
 class SyntaxError(Exception):
     """When we run into an unexpected token, this is the exception to use"""
-    def __init__(self, charpos=-1, msg="Bad Token", context=None):
+    def __init__(self, charpos=None, msg="Bad Token", context=None):
         Exception.__init__(self)
         self.charpos = charpos
         self.msg = msg
         self.context = context
         
     def __str__(self):
-        if self.charpos < 0: return 'SyntaxError'
-        else: return 'SyntaxError@char%s(%s)' % (repr(self.charpos), self.msg)
+        if not self.charpos: return 'SyntaxError'
+        else: return 'SyntaxError@%s(%s)' % (repr(self.charpos), self.msg)
 
 class NoMoreTokens(Exception):
     """Another exception object, for when we run out of tokens"""
     pass
 
-class Scanner:
+class Token(object):
+    """Yapps token.
+
+    This is a container for a scanned token.
+    """
+
+    def __init__(self, type,value, pos=None):
+        """Initialize a token."""
+        self.type = type
+        self.value = value
+        self.pos = pos
+
+    def __repr__(self):
+        output = '<%s: %s' % (self.type, repr(self.value))
+        if self.pos:
+            output += " @ "
+            if self.pos[0]:
+                output += "%s:" % self.pos[0]
+            if self.pos[1]:
+                output += "%d" % self.pos[1]
+            if self.pos[2] is not None:
+                output += ".%d" % self.pos[2]
+        output += ">"
+        return output
+
+class Scanner(object):
     """Yapps scanner.
 
     The Yapps scanner can work in context sensitive or context
@@ -47,7 +75,8 @@ class Scanner:
     
     """
     
-    def __init__(self, patterns, ignore, input):
+    def __init__(self, patterns, ignore, input="",
+            file=None,filename=None,stacked=False):
         """Initialize the scanner.
 
         Parameters:
@@ -60,12 +89,19 @@ class Scanner:
         Note that the patterns parameter expects uncompiled regexes,
         whereas the self.patterns field expects compiled regexes.
         """
-        self.tokens = [] # [(begin char pos, end char pos, token name, matched text), ...]
-        self.restrictions = []
         self.input = input
-        self.pos = 0
         self.ignore = ignore
-        self.first_line_number = 1
+        self.file = file
+        self.filename = filename
+        self.pos = 0
+        self.del_pos = 0 # skipped
+        self.del_line = 0 # skipped
+        self.line = 1
+        self.col = 0
+        self.tokens = []
+        self.last_token = None
+        self.stack = None
+        self.stacked = stacked
         
         if patterns is not None:
             # Compile the regex strings into regex objects
@@ -73,77 +109,133 @@ class Scanner:
             for terminal, regex in patterns:
                 self.patterns.append( (terminal, re.compile(regex)) )
 
-    def get_token_pos(self):
-        """Get the current token position in the input text."""
-        return len(self.tokens)
+    def stack_input(self, input="", file=None, filename=None, token=None):
+        """Temporarily parse from a second file."""
 
-    def get_char_pos(self):
-        """Get the current char position in the input text."""
-        return self.pos
+        # Already read from somewhere else: Go on top of that, please.
+        if self.stack:
+            if not filename:
+                filename = 1
+            elif isinstance(filename,int):
+                filename += 1
+            self.stack.stack(input,file,filename,token)
+
+        if isinstance(filename,int):
+            filename = "<str_%d>" % filename
+
+        self.stack = object.__new__(self.__class__)
+        Scanner.__init__(self.stack,self.patterns,self.ignore,input,file,filename, stacked=True)
+        self.stack_token = token
+
+    def get_pos(self):
+        """Return a file/line/char tuple."""
+        if self.stack: return self.stack.get_pos()
+
+        return (self.filename, self.line, self.pos+self.del_pos)
+
+#    def __repr__(self):
+#        """Print the last few tokens that have been scanned in"""
+#        output = ''
+#        for t in self.tokens:
+#            output += '%s\n' % (repr(t),)
+#        return output
     
-    def get_prev_char_pos(self, i=None):
-        """Get the previous position (one token back) in the input text."""
-        if self.pos == 0: return 0
-        if i is None: i = -1
-        return self.tokens[i][0]
+    def print_line_with_pointer(self, p, out=sys.stderr):
+        """Print the line of 'text' that includes position 'p',
+        along with a second line with a single caret (^) at position p"""
+
+        file,line,p = p
+        if file != self.file:
+            if self.stack: return self.print_line_with_pointer(p,out)
+            print >>out, "(%s: not in input buffer)" % file
+            return
+
+        text = self.input
+
+        line -= self.del_line
+        if line > 0:
+            while text:
+                line = line - 1
+                try:
+                    cr = text.index("\n")
+                except ValueError:
+                    if line:
+                        text = ""
+                    break
+                if not line:
+                    text = text[:cr]
+                    break
+                text = text[cr+1:]
+        else:
+            print >>out, "(%s:%d not in input buffer)" % (file,line)
+            return
+
+        # Now try printing part of the line
+        text = text[max(p-80, 0):p+80]
+        p = p - max(p-80, 0)
+
+        # Strip to the left
+        i = text[:p].rfind('\n')
+        j = text[:p].rfind('\r')
+        if i < 0 or (0 <= j < i): i = j
+        if 0 <= i < p:
+            p = p - i - 1
+            text = text[i+1:]
+
+        # Strip to the right
+        i = text.find('\n', p)
+        j = text.find('\r', p)
+        if i < 0 or (0 <= j < i): i = j
+        if i >= 0:
+            text = text[:i]
+
+        # Now shorten the text
+        while len(text) > 70 and p > 60:
+            # Cut off 10 chars
+            text = "..." + text[10:]
+            p = p - 7
+
+        # Now print the string, along with an indicator
+        print >>out, '> ',text
+        print >>out, '> ',' '*p + '^'
     
-    def get_line_number(self):
-        """Get the line number of the current position in the input text."""
-        # TODO: make this work at any token/char position
-        return self.first_line_number + self.get_input_scanned().count('\n')
+    def grab_input(self):
+        """Get more input if possible."""
+        if not self.file: return
+        if len(self.input) < self.pos >= MIN_WINDOW: return
 
-    def get_column_number(self):
-        """Get the column number of the current position in the input text."""
-        s = self.get_input_scanned()
-        i = s.rfind('\n') # may be -1, but that's okay in this case
-        return len(s) - (i+1)
-    
-    def get_input_scanned(self):
-        """Get the portion of the input that has been tokenized."""
-        return self.input[:self.pos]
+        data = self.file.read(MIN_WINDOW)
+        if data is None or data == "":
+            self.file = None
 
-    def get_input_unscanned(self):
-        """Get the portion of the input that has not yet been tokenized."""
-        return self.input[self.pos:]
-
-    def token(self, i, restrict=None):
-        """Get the i'th token in the input.
-
-        If i is one past the end, then scan for another token.
+        # Drop bytes from the start, if necessary.
+        if self.pos > 2*MIN_WINDOW:
+            self.del_pos += MIN_WINDOW
+            self.del_line += self.input[:MIN_WINDOW].count("\n")
+            self.pos -= MIN_WINDOW
+            self.input = self.input[MIN_WINDOW:] + data
+        else:
+            self.input = self.input + data
         
-        Args:
 
-        restrict : [token, ...] or None; if restrict is None, then any
-        token is allowed.  You may call token(i) more than once.
-        However, the restrict set may never be larger than what was
-        passed in on the first call to token(i).
-        
-        """
-        if i == len(self.tokens):
-            self.scan(restrict)
-        if i < len(self.tokens):
-            # Make sure the restriction is more restricted.  This
-            # invariant is needed to avoid ruining tokenization at
-            # position i+1 and higher.
-            if restrict and self.restrictions[i]:
-                for r in restrict:
-                    if r not in self.restrictions[i]:
-                        raise NotImplementedError("Unimplemented: restriction set changed")
-            return self.tokens[i]
-        raise NoMoreTokens()
-    
-    def __repr__(self):
-        """Print the last 10 tokens that have been scanned in"""
-        output = ''
-        for t in self.tokens[-10:]:
-            output = '%s\n  (@%s)  %s  =  %s' % (output,t[0],t[2],repr(t[3]))
-        return output
-    
-    def scan(self, restrict):
+    def token(self, restrict):
         """Should scan another token and add it to the list, self.tokens,
         and add the restriction to self.restrictions"""
+        if self.stack:
+            try:
+                return self.stack.token(restrict)
+            except StopIteration:
+                self.stack = None
+                if self.stack_token: return self.stack_token
+
         # Keep looking for a token, ignoring any in self.ignore
         while 1:
+            self.grab_input()
+
+            # special handling for end-of-file
+            if self.stacked and self.pos==len(self.input):
+                raise StopIteration
+
             # Search the patterns for the longest match, with earlier
             # tokens in the list having preference
             best_match = -1
@@ -163,48 +255,69 @@ class Scanner:
                 msg = 'Bad Token'
                 if restrict:
                     msg = 'Trying to find one of '+', '.join(restrict)
-                raise SyntaxError(self.pos, msg)
+                raise SyntaxError(self.get_pos(), msg)
+
+            ignore = (best_pat in self.ignore)
+            if not ignore:
+                value = self.input[self.pos:self.pos+best_match]
+                tok=Token(type=best_pat, value=value, pos=self.get_pos())
+
+            self.line 
+            self.pos += best_match
 
             # If we found something that isn't to be ignored, return it
-            if best_pat not in self.ignore:
-                # Create a token with this data
-                token = (self.pos, self.pos+best_match, best_pat,
-                         self.input[self.pos:self.pos+best_match])
-                self.pos = self.pos + best_match
-                # Only add this token if it's not in the list
-                # (to prevent looping)
-                if not self.tokens or token != self.tokens[-1]:
-                    self.tokens.append(token)
-                    self.restrictions.append(restrict)
-                return
-            else:
-                # This token should be ignored ..
-                self.pos = self.pos + best_match
+            if not ignore:
+                if len(self.tokens) >= 10:
+                    del self.tokens[0]
+                self.tokens.append(tok)
+                self.last_token = tok
+                return tok
 
-class Parser:
+class Parser(object):
     """Base class for Yapps-generated parsers.
 
     """
     
     def __init__(self, scanner):
         self._scanner = scanner
-        self._pos = 0
+        self._tok = None
+        self._types = None
+        self._last = None
         
+    def _stack(self, input="",file=None,filename=None):
+        """Temporarily read from someplace else"""
+        self._scanner.stack_input(input,file,filename,self._tok)
+        self._tok = None
+
     def _peek(self, *types):
         """Returns the token type for lookahead; if there are any args
         then the list of args is the set of token types to allow"""
-        tok = self._scanner.token(self._pos, types)
-        return tok[2]
+        if self._tok is None:
+            self._types = types
+            self._tok = self._scanner.token(types)
+        elif self._types:
+            for t in types:
+                if t not in self._types:
+                    raise NotImplementedError("Unimplemented: restriction set changed")
+        return self._tok.type
         
     def _scan(self, type):
         """Returns the matched text, and moves to the next token"""
-        tok = self._scanner.token(self._pos, [type])
-        if tok[2] != type:
-            raise SyntaxError(tok[0], 'Trying to find '+type+' :'+ ' ,'.join(self._scanner.restrictions[self._pos]))
-        self._pos = 1 + self._pos
-        return tok[3]
+        tok = self._tok
+        if self._tok is None:
+            tok = self._scanner.token(self._types)
+        else:
+            if self._types and type not in self._types:
+                raise NotImplementedError("Unimplemented: restriction set changed")
 
-class Context:
+            tok = self._tok
+            self._tok = None
+        if tok.type != type:
+            if not self._types: self._types=[]
+            raise SyntaxError(tok.pos, 'Trying to find '+type+': '+ ', '.join(self._types)+", got "+tok.type)
+        return tok.value
+
+class Context(object):
     """Class to represent the parser's call stack.
 
     Every rule creates a Context that links to its parent rule.  The
@@ -212,20 +325,19 @@ class Context:
 
     """
     
-    def __init__(self, parent, scanner, tokenpos, rule, args=()):
+    def __init__(self, parent, scanner, rule, args=()):
         """Create a new context.
 
         Args:
         parent: Context object or None
         scanner: Scanner object
-        pos: integer (scanner token position)
         rule: string (name of the rule)
         args: tuple listing parameters to the rule
 
         """
         self.parent = parent
         self.scanner = scanner
-        self.tokenpos = tokenpos
+        self.token = scanner.last_token
         self.rule = rule
         self.args = args
 
@@ -235,62 +347,28 @@ class Context:
         output += self.rule
         return output
     
-def print_line_with_pointer(text, p):
-    """Print the line of 'text' that includes position 'p',
-    along with a second line with a single caret (^) at position p"""
-    # Now try printing part of the line
-    text = text[max(p-80, 0):p+80]
-    p = p - max(p-80, 0)
-
-    # Strip to the left
-    i = text[:p].rfind('\n')
-    j = text[:p].rfind('\r')
-    if i < 0 or (0 <= j < i): i = j
-    if 0 <= i < p:
-        p = p - i - 1
-        text = text[i+1:]
-
-    # Strip to the right
-    i = text.find('\n', p)
-    j = text.find('\r', p)
-    if i < 0 or (0 <= j < i): i = j
-    if i >= 0:
-        text = text[:i]
-
-    # Now shorten the text
-    while len(text) > 70 and p > 60:
-        # Cut off 10 chars
-        text = "..." + text[10:]
-        p = p - 7
-
-    # Now print the string, along with an indicator
-    print >>sys.stderr, '> ',text
-    print >>sys.stderr, '> ',' '*p + '^'
-    
-def print_error(input, err, scanner):
+def print_error(err, scanner):
     """Print error messages, the parser stack, and the input text -- for human-readable error messages."""
     # NOTE: this function assumes 80 columns :-(
     # Figure out the line number
-    line_number = scanner.get_line_number()
-    column_number = scanner.get_column_number()
-    print >>sys.stderr, '%d:%d: %s' % (line_number, column_number, err.msg)
+    file_name, line_number, column_number = scanner.get_pos()
+    print >>sys.stderr, '%s:%d:%d: %s' % (file_name, line_number, column_number, err.msg)
 
     context = err.context
     if not context:
-        print_line_with_pointer(input, err.charpos)
+        scanner.print_line_with_pointer(err.charpos)
         
     while context:
         # TODO: add line number
         print >>sys.stderr, 'while parsing %s%s:' % (context.rule, tuple(context.args))
-        print_line_with_pointer(input, context.scanner.get_prev_char_pos(context.tokenpos))
+        scanner.print_line_with_pointer(context.token.pos)
         context = context.parent
 
 def wrap_error_reporter(parser, rule):
     try:
         return getattr(parser, rule)()
     except SyntaxError, e:
-        input = parser._scanner.input
-        print_error(input, e, parser._scanner)
+        print_error(e, parser._scanner)
     except NoMoreTokens:
         print >>sys.stderr, 'Could not complete parsing; stopped around here:'
         print >>sys.stderr, parser._scanner

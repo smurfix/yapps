@@ -12,6 +12,7 @@ parser Calculator:
     token END: "$"
     token NUM: "[0-9]+"
     token VAR: "[a-zA-Z_]+"
+    token READ: "[?]"
 
     # Each line can either be an expression or an assignment statement
     rule goal:   expr<<[]>> END            {{ print '=', expr }}
@@ -34,9 +35,11 @@ parser Calculator:
 
     # A term is a number, variable, or an expression surrounded by parentheses
     rule term<<V>>:   
-                 NUM                      {{ return atoi(NUM) }}
+                 NUM                      {{ return int(NUM) }}
                | VAR                      {{ return lookup(V, VAR) }}
                | "\\(" expr "\\)"         {{ return expr }}
+			   | READ                     {{ self._stack(raw_input(">?> ")) }}
+			     term                     {{ return term }}
                | "let" VAR "=" expr<<V>>  {{ V = [(VAR, expr)] + V }}
                  "in" expr<<V>>           {{ return expr }}
 %%
@@ -52,7 +55,7 @@ if __name__=='__main__':
     while 1:
         try: s = raw_input('>>> ')
 	except EOFError: break
-        if not strip(s): break
+        if not s.strip(): break
         parse('goal', s)
     print 'Bye.'
 

@@ -276,7 +276,7 @@ class Generator:
             self.write(INDENT, "def ", r, "(self")
             if self.params[r]: self.write(", ", self.params[r])
             self.write(", _parent=None):\n")
-            self.write(INDENT+INDENT, "_context = self.Context(_parent, self._scanner, self._pos, %s, [%s])\n" %
+            self.write(INDENT+INDENT, "_context = self.Context(_parent, self._scanner, %s, [%s])\n" %
                        (repr(r), self.params.get(r, '')))
             self.rules[r].output(self, INDENT+INDENT)
             self.write("\n")
@@ -640,6 +640,6 @@ class Star(Wrapper):
         # TODO: do we need to do this only when it's a context-insensitive scanner?
         gen.write(indent, "if %s:\n" %
                   gen.not_peek_test(gen.non_ignored_tokens(), self.follow))
-        gen.write(indent+INDENT, "raise yappsrt.SyntaxError(charpos=self._scanner.get_prev_char_pos(), context=_context, msg='Need one of ' + ', '.join(%s))\n" %
+        gen.write(indent+INDENT, "raise yappsrt.SyntaxError(pos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(%s))\n" %
                   repr(self.first))
 
