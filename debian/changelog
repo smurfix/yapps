@@ -1,3 +1,9 @@
+yapps (2.1.1-2) unstable; urgency=low
+
+  * runtime: fix error reporting
+
+ -- Matthias Urlichs <smurf@debian.org>  Tue, 30 Dec 2003 13:30:14 +0100
+
 yapps (2.1.1-1) unstable; urgency=low
 
   * Initial Debian packaging.

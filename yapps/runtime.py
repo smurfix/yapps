@@ -163,23 +163,24 @@ class Scanner(object):
             return
 
         text = self.input
-        p += length
+        p += length-1 # starts at pos 1
 
         origline=line
         line -= self.del_line
+	spos=0
         if line > 0:
-            while text:
+            while 1:
                 line = line - 1
                 try:
-                    cr = text.index("\n")
+                    cr = text.index("\n",spos)
                 except ValueError:
                     if line:
                         text = ""
                     break
-                if not line:
-                    text = text[:cr]
+                if line == 0:
+                    text = text[spos:cr]
                     break
-                text = text[cr+1:]
+                spos = cr+1
         else:
             print >>out, "(%s:%d not in input buffer)" % (file,origline)
             return
@@ -394,10 +395,9 @@ def print_error(err, scanner):
     file_name, line_number, column_number = scanner.get_pos()
     print >>sys.stderr, '%s:%d:%d: %s' % (file_name, line_number, column_number, err.msg)
 
-    context = err.context
-    if not context:
-        scanner.print_line_with_pointer(err.pos)
+    scanner.print_line_with_pointer(err.pos)
         
+    context = err.context
     token = None
     while context:
         print >>sys.stderr, 'while parsing %s%s:' % (context.rule, tuple(context.args))
