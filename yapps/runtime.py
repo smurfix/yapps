@@ -405,7 +405,7 @@ class Context(object):
 		output += self.rule
 		return output
 	
-def print_error(err, scanner):
+def print_error(err, scanner, max_ctx=None):
 	"""Print error messages, the parser stack, and the input text -- for human-readable error messages."""
 	# NOTE: this function assumes 80 columns :-(
 	# Figure out the line number
@@ -427,6 +427,10 @@ def print_error(err, scanner):
 		if token:
 			scanner.print_line_with_pointer(token.pos, length=len(token.value))
 		context = context.parent
+		if max_ctx:
+			max_ctx = max_ctx-1
+			if not max_ctx:
+				break
 
 def wrap_error_reporter(parser, rule, *args,**kw):
 	try:
