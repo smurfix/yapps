@@ -323,7 +323,7 @@ class Scanner(object):
         context = kw.get("context",None)
 
         if self.last_token is None:
-            tok = self.token(self.last_types,context)
+            tok = self.token([type],context)
         else:
             if self.last_types and type not in self.last_types:
                 raise NotImplementedError("Unimplemented: restriction set changed")
