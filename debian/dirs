@@ -1,5 +1,4 @@
 usr/bin
 usr/lib/site-python
 usr/share/doc/yapps2
-usr/share/lintian/overrides
-usr/share/linda/overrides
+usr/share/doc/yapps2/html/

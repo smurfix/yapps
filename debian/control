@@ -2,12 +2,12 @@ Source: yapps2
 Section: python
 Priority: optional
 Maintainer: Matthias Urlichs <smurf@debian.org>
-Build-Depends-Indep: debhelper (>= 4.1), python-dev (>= 2.2)
+Build-Depends-Indep: debhelper (>= 4.1), python-dev (>= 2.2), latex2html
 Standards-Version: 3.6.1
 
 Package: yapps2
 Architecture: all
-Depends: python (>= 2.2), python (<< 2.4), ${python:Depends}
+Depends: python (>= 2.2), python (<< 2.4)
 Description: Yet Another Python Parser System
  YAPPS is an easy to use parser generator that is written in Python and
  generates Python code.  There are several parser generator systems
@@ -21,7 +21,7 @@ Description: Yet Another Python Parser System
  .
  This package contains several upward-compatible enhancements to the
  original YAPPS source:
- - Handle stacked input ("include files")
- - augmented ignore-able patterns (can parse multi-line C comments correctly)
- - better error reporting
- - read input incrementally
+ .
+     - handles recursive input ("include files")
+     - better error reporting
+     - reads input incrementally
