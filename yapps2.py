@@ -40,8 +40,9 @@ def generate(inputfilename, outputfilename='', dump=0, **flags):
     if f >= 0: s, postparser = s[:f], '\n\n'+s[f+len(DIVIDER):]
 
     # Create the parser and scanner and parse the text
-    scanner = grammar.ParserDescriptionScanner(s)
-    if preparser: scanner.del_line += 1+preparser.count('\n')
+    scanner = grammar.ParserDescriptionScanner(s, filename=inputfilename)
+    if preparser: scanner.del_line += preparser.count('\n')
+
     parser = grammar.ParserDescription(scanner)
     t = yappsrt.wrap_error_reporter(parser, 'Parser')
     if t is None: return # Failure

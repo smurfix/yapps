@@ -281,8 +281,8 @@ class Generator:
             self.write("        (%s, re.compile(%s)),\n" % (
                 repr(p), repr(self.tokens[p])))
         self.write("    ]\n")
-        self.write("    def __init__(self, str):\n")
-        self.write("        yappsrt.Scanner.__init__(self,None,%s,str)\n" %
+        self.write("    def __init__(self, str,*args,**kw):\n")
+        self.write("        yappsrt.Scanner.__init__(self,None,%s,str,*args,**kw)\n" %
                    self.repr_ignore())
         self.write("\n")
         

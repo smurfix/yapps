@@ -71,8 +71,9 @@ class ParserDescriptionScanner(yappsrt.Scanner):
         ('QUEST', re.compile('[?]')),
         ('COLON', re.compile(':')),
     ]
-    def __init__(self, str):
-        yappsrt.Scanner.__init__(self,None,{'[ \t\r\n]+':None, '#.*?\r?\n':None},str)
+
+    def __init__(self, str,*args,**kw):
+        yappsrt.Scanner.__init__(self,None,{'[ \t\r\n]+':None, '#.*?\r?\n':None},str,*args,**kw)
 
 class ParserDescription(yappsrt.Parser):
     Context = yappsrt.Context

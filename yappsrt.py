@@ -106,8 +106,8 @@ class Scanner(object):
         self.filename = filename
         self.pos = 0
         self.del_pos = 0 # skipped
-        self.del_line = 0 # skipped
         self.line = 1
+        self.del_line = 0 # skipped
         self.col = 0
         self.tokens = []
         self.stack = None
@@ -144,7 +144,7 @@ class Scanner(object):
         """Return a file/line/char tuple."""
         if self.stack: return self.stack.get_pos()
 
-        return (self.filename, self.line, self.pos+self.del_pos)
+        return (self.filename, self.line+self.del_line, self.col)
 
 #    def __repr__(self):
 #        """Print the last few tokens that have been scanned in"""
@@ -164,8 +164,9 @@ class Scanner(object):
             return
 
         text = self.input
-	p += length
+        p += length
 
+        origline=line
         line -= self.del_line
         if line > 0:
             while text:
@@ -181,7 +182,7 @@ class Scanner(object):
                     break
                 text = text[cr+1:]
         else:
-            print >>out, "(%s:%d not in input buffer)" % (file,line)
+            print >>out, "(%s:%d not in input buffer)" % (file,origline)
             return
 
         # Now try printing part of the line
@@ -265,10 +266,10 @@ class Scanner(object):
                 if restrict and p not in restrict and p not in self.ignore:
                     continue
                 m = regexp.match(self.input, self.pos)
-                if m and len(m.group(0)) > best_match:
+                if m and m.end()-m.start() > best_match:
                     # We got a match that's better than the previous one
                     best_pat = p
-                    best_match = len(m.group(0))
+                    best_match = m.end()-m.start()
                     
             # If we didn't find anything, raise an error
             if best_pat == '(error)' and best_match < 0:
@@ -278,12 +279,18 @@ class Scanner(object):
                 raise SyntaxError(self.get_pos(), msg, context=context)
 
             ignore = best_pat in self.ignore
+            value = self.input[self.pos:self.pos+best_match]
             if not ignore:
-                value = self.input[self.pos:self.pos+best_match]
                 tok=Token(type=best_pat, value=value, pos=self.get_pos())
 
-            self.line 
             self.pos += best_match
+
+            npos = value.rfind("\n")
+            if npos > -1:
+                self.col = best_match-npos
+                self.line += value.count("\n")
+            else:
+                self.col += best_match
 
             # If we found something that isn't to be ignored, return it
             if not ignore:
@@ -291,6 +298,7 @@ class Scanner(object):
                     del self.tokens[0]
                 self.tokens.append(tok)
                 self.last_read_token = tok
+                # print repr(tok)
                 return tok
             else:
                 ignore = self.ignore[best_pat]
