@@ -394,10 +394,14 @@ def print_error(err, scanner):
     """Print error messages, the parser stack, and the input text -- for human-readable error messages."""
     # NOTE: this function assumes 80 columns :-(
     # Figure out the line number
-    file_name, line_number, column_number = scanner.get_pos()
+    pos = err.pos
+    if not pos:
+	pos = scanner.get_pos()
+
+    file_name, line_number, column_number = pos
     print >>sys.stderr, '%s:%d:%d: %s' % (file_name, line_number, column_number, err.msg)
 
-    scanner.print_line_with_pointer(err.pos)
+    scanner.print_line_with_pointer(pos)
         
     context = err.context
     token = None
