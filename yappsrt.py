@@ -24,15 +24,15 @@ MIN_WINDOW=4096
 
 class SyntaxError(Exception):
     """When we run into an unexpected token, this is the exception to use"""
-    def __init__(self, charpos=None, msg="Bad Token", context=None):
+    def __init__(self, pos=None, msg="Bad Token", context=None):
         Exception.__init__(self)
-        self.charpos = charpos
+        self.pos = pos
         self.msg = msg
         self.context = context
         
     def __str__(self):
-        if not self.charpos: return 'SyntaxError'
-        else: return 'SyntaxError@%s(%s)' % (repr(self.charpos), self.msg)
+        if not self.pos: return 'SyntaxError'
+        else: return 'SyntaxError@%s(%s)' % (repr(self.pos), self.msg)
 
 class NoMoreTokens(Exception):
     """Another exception object, for when we run out of tokens"""
@@ -356,7 +356,7 @@ def print_error(err, scanner):
 
     context = err.context
     if not context:
-        scanner.print_line_with_pointer(err.charpos)
+        scanner.print_line_with_pointer(err.pos)
         
     while context:
         # TODO: add line number

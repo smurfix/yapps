@@ -76,7 +76,6 @@ class ParserDescriptionScanner(yappsrt.Scanner):
 
 class ParserDescription(yappsrt.Parser):
     Context = yappsrt.Context
-
     def Parser(self, _parent=None):
         _context = self.Context(_parent, self._scanner, 'Parser', [])
         self._scan('"parser"')
@@ -97,7 +96,7 @@ class ParserDescription(yappsrt.Parser):
             Str = self.Str(_context)
             opt[Str] = 1
         if self._peek() not in ['"option"', '"token"', '"ignore"', 'EOF', '"rule"']:
-            raise yappsrt.SyntaxError(charpos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(['"option"', '"token"', '"ignore"', 'EOF', '"rule"']))
+            raise yappsrt.SyntaxError(pos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(['"option"', '"token"', '"ignore"', 'EOF', '"rule"']))
         return opt
 
     def Tokens(self, _parent=None):
@@ -119,7 +118,7 @@ class ParserDescription(yappsrt.Parser):
             else:
                 raise yappsrt.SyntaxError(_token[0], 'Could not match Tokens')
         if self._peek() not in ['"token"', '"ignore"', 'EOF', '"rule"']:
-            raise yappsrt.SyntaxError(charpos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(['"token"', '"ignore"', 'EOF', '"rule"']))
+            raise yappsrt.SyntaxError(pos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(['"token"', '"ignore"', 'EOF', '"rule"']))
         return tok
 
     def Rules(self, tokens, _parent=None):
@@ -133,34 +132,34 @@ class ParserDescription(yappsrt.Parser):
             ClauseA = self.ClauseA(ID, tokens, _context)
             rul.append( (ID, OptParam, ClauseA) )
         if self._peek() not in ['"rule"', 'EOF']:
-            raise yappsrt.SyntaxError(charpos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(['"rule"', 'EOF']))
+            raise yappsrt.SyntaxError(pos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(['"rule"', 'EOF']))
         return rul
 
     def ClauseA(self, rule, tokens, _parent=None):
         _context = self.Context(_parent, self._scanner, 'ClauseA', [rule, tokens])
-        ClauseB = self.ClauseB(rule, tokens, _context)
+        ClauseB = self.ClauseB(rule,tokens, _context)
         v = [ClauseB]
         while self._peek() == 'OR':
             OR = self._scan('OR')
-            ClauseB = self.ClauseB(rule, tokens, _context)
+            ClauseB = self.ClauseB(rule,tokens, _context)
             v.append(ClauseB)
         if self._peek() not in ['OR', 'RP', 'RB', '"rule"', 'EOF']:
-            raise yappsrt.SyntaxError(charpos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(['OR', 'RP', 'RB', '"rule"', 'EOF']))
-        return cleanup_choice(rule, v)
+            raise yappsrt.SyntaxError(pos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(['OR', 'RP', 'RB', '"rule"', 'EOF']))
+        return cleanup_choice(rule,v)
 
-    def ClauseB(self, rule, tokens, _parent=None):
-        _context = self.Context(_parent, self._scanner, 'ClauseB', [rule, tokens])
+    def ClauseB(self, rule,tokens, _parent=None):
+        _context = self.Context(_parent, self._scanner, 'ClauseB', [rule,tokens])
         v = []
         while self._peek() in ['STR', 'ID', 'LP', 'LB', 'STMT']:
-            ClauseC = self.ClauseC(rule, tokens, _context)
+            ClauseC = self.ClauseC(rule,tokens, _context)
             v.append(ClauseC)
         if self._peek() not in ['STR', 'ID', 'LP', 'LB', 'STMT', 'OR', 'RP', 'RB', '"rule"', 'EOF']:
-            raise yappsrt.SyntaxError(charpos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(['STR', 'ID', 'LP', 'LB', 'STMT', 'OR', 'RP', 'RB', '"rule"', 'EOF']))
+            raise yappsrt.SyntaxError(pos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(['STR', 'ID', 'LP', 'LB', 'STMT', 'OR', 'RP', 'RB', '"rule"', 'EOF']))
         return cleanup_sequence(rule, v)
 
-    def ClauseC(self, rule, tokens, _parent=None):
-        _context = self.Context(_parent, self._scanner, 'ClauseC', [rule, tokens])
-        ClauseD = self.ClauseD(rule, tokens, _context)
+    def ClauseC(self, rule,tokens, _parent=None):
+        _context = self.Context(_parent, self._scanner, 'ClauseC', [rule,tokens])
+        ClauseD = self.ClauseD(rule,tokens, _context)
         _token = self._peek()
         if _token == 'PLUS':
             PLUS = self._scan('PLUS')
@@ -176,8 +175,8 @@ class ParserDescription(yappsrt.Parser):
         else:
             raise yappsrt.SyntaxError(_token[0], 'Could not match ClauseC')
 
-    def ClauseD(self, rule, tokens, _parent=None):
-        _context = self.Context(_parent, self._scanner, 'ClauseD', [rule, tokens])
+    def ClauseD(self, rule,tokens, _parent=None):
+        _context = self.Context(_parent, self._scanner, 'ClauseD', [rule,tokens])
         _token = self._peek()
         if _token == 'STR':
             STR = self._scan('STR')
@@ -187,15 +186,15 @@ class ParserDescription(yappsrt.Parser):
         elif _token == 'ID':
             ID = self._scan('ID')
             OptParam = self.OptParam(_context)
-            return resolve_name(rule, tokens, ID, OptParam)
+            return resolve_name(rule,tokens, ID, OptParam)
         elif _token == 'LP':
             LP = self._scan('LP')
-            ClauseA = self.ClauseA(rule, tokens, _context)
+            ClauseA = self.ClauseA(rule,tokens, _context)
             RP = self._scan('RP')
             return ClauseA
         elif _token == 'LB':
             LB = self._scan('LB')
-            ClauseA = self.ClauseA(rule, tokens, _context)
+            ClauseA = self.ClauseA(rule,tokens, _context)
             RB = self._scan('RB')
             return parsetree.Option(rule, ClauseA)
         elif _token == 'STMT':
