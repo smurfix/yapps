@@ -1,3 +1,9 @@
+yapps2 (2.1.1-16) unstable; urgency=medium
+
+  * Brown paper bag -- fix Python 2.4 stuff.
+
+ -- Matthias Urlichs <smurf@debian.org>  Thu, 23 Dec 2004 23:48:58 +0100
+
 yapps2 (2.1.1-15) unstable; urgency=medium
 
   * Add support for Python 2.4.
