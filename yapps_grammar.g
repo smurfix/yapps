@@ -1,5 +1,3 @@
-#!/usr/bin/python
-#
 # grammar.py, part of Yapps 2 - yet another python parser system
 # Copyright 1999-2003 by Amit J. Patel <amitp@cs.stanford.edu>
 #
@@ -19,7 +17,7 @@ by running Yapps on yapps_grammar.g.  (Holy circularity, Batman!)
 """
 
 import sys, re
-import parsetree
+from yapps import parsetree
 
 ######################################################################
 def cleanup_choice(rule, lst):
