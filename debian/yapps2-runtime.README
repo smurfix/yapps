@@ -1,0 +1,11 @@
+The Debian Package yapps2-runtime
+---------------------------------
+
+This package contains the new runtime Python code for the augmented
+yapps2 parser which is included in Debian.
+
+You need to depend on this package if you Debianize Python programs that
+contain a yapps2-built parser.
+
+-- 
+Matthias Urlichs

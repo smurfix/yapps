@@ -62,6 +62,9 @@ install: build
 	python setup.py install --root=$(shell pwd)/debian/yapps2 --no-compile --install-purelib=/usr/lib/site-python
 	install -m 755 yapps2.py debian/yapps2/usr/bin/yapps
 	install -m 755 doc/yapps2.html debian/yapps2/usr/share/doc/yapps2/
+	mv $(shell pwd)/debian/yapps2/usr/lib/site-python/yapps/runtime.py \
+	   $(shell pwd)/debian/yapps2/usr/lib/site-python/yapps/__init__.py \
+	   $(shell pwd)/debian/yapps2-runtime/usr/lib/site-python/yapps/
 
 
 # Build architecture-independent files here.
@@ -81,7 +84,7 @@ binary-arch: build install
 	dh_compress usr/share/doc/yapps2/NOTES
 	dh_fixperms
 #	dh_perl
-#	dh_python
+	dh_python
 #	dh_makeshlibs
 	dh_installdeb
 	dh_shlibdeps

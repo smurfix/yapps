@@ -7,7 +7,7 @@ Standards-Version: 3.6.1
 
 Package: yapps2
 Architecture: all
-Depends: python (>= 2.2), python (<< 2.4)
+Depends: python (>= 2.2), python (<< 2.4), yapps2-runtime (= ${Source-Version})
 Description: Yet Another Python Parser System
  YAPPS is an easy to use parser generator that is written in Python and
  generates Python code.  There are several parser generator systems
@@ -25,3 +25,16 @@ Description: Yet Another Python Parser System
      - handles recursive input ("include files")
      - better error reporting
      - reads input incrementally
+
+Package: yapps2-runtime
+Architecture: all
+Depends: python (>= 2.2), python (<< 2.4)
+Description: Yet Another Python Parser System
+ YAPPS is an easy to use parser generator that is written in Python and
+ generates Python code.  There are several parser generator systems
+ already available for Python, but this parser has different goals:
+ Yapps is simple, very easy to use, and produces human-readable parsers.
+ .
+ This package contains the Python runtime support for parsers generated
+ with yapps2.
+

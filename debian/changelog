@@ -1,3 +1,12 @@
+yapps2 (2.1.1-14) unstable; urgency=medium
+
+  * Split off the Python parser runtime into its own package
+    + sort-of Closes: #272738: Generated python files import yapps.runtime
+                               instead of yappsrt
+      - can't use yappsrt; it's not downward-compatible
+
+ -- Matthias Urlichs <smurf@debian.org>  Thu, 23 Sep 2004 10:44:41 +0200
+
 yapps2 (2.1.1-13) unstable; urgency=low
 
   * latex2html => hevea
