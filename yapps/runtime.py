@@ -218,7 +218,7 @@ class Scanner(object):
     def grab_input(self):
         """Get more input if possible."""
         if not self.file: return
-        if len(self.input) < self.pos >= MIN_WINDOW: return
+        if len(self.input) - self.pos >= MIN_WINDOW: return
 
         data = self.file.read(MIN_WINDOW)
         if data is None or data == "":

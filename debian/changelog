@@ -1,3 +1,9 @@
+yapps2 (2.1.1-11) unstable; urgency=low
+
+  * Typo (made large file handling slow)
+
+ -- Matthias Urlichs <smurf@debian.org>  Sun, 16 May 2004 22:01:02 +0200
+
 yapps2 (2.1.1-10) unstable; urgency=low
 
   * Documentation update:
