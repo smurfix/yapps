@@ -1,3 +1,9 @@
+yapps (2.1.1-8) unstable; urgency=low
+
+  * require python-dev because of distutils
+
+ -- Matthias Urlichs <smurf@debian.org>  Wed, 31 Dec 2003 14:00:42 +0100
+
 yapps (2.1.1-7) unstable; urgency=low
 
   * Change yapps.py t exit 1 on failure to parse
