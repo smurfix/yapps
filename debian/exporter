@@ -8,3 +8,10 @@ if test -z "$2" ; then T="+"; else T="$2"; fi
 D="$1"
 
 bk changes -v -r1.0..$T > "$D"/changelog
+if test ! -d doc ; then
+	mkdir doc yapps
+	mv yapps2.tex doc
+	mv yappsrt.py yapps/runtime.py
+	mv parsetree.py grammar.py yapps/
+	rm yapps_grammar.py
+fi
