@@ -2,8 +2,8 @@ Source: yapps
 Section: python
 Priority: optional
 Maintainer: Matthias Urlichs <smurf@debian.org>
-Build-Depends: debhelper (>= 4.0.0), python (>= 2.2)
-Standards-Version: 3.6.0
+Build-Depends-Indep: debhelper (>= 4.0.0), python (>= 2.2)
+Standards-Version: 3.6.1
 
 Package: python-yapps
 Architecture: all

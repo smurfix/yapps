@@ -1,3 +1,9 @@
+yapps (2.1.1-6) unstable; urgency=low
+
+  * Update to 3.6.1, use build-depends-indep.
+
+ -- Matthias Urlichs <smurf@debian.org>  Tue, 30 Dec 2003 15:36:56 +0100
+
 yapps (2.1.1-5) unstable; urgency=low
 
   * Add some notes.
