@@ -1,3 +1,9 @@
+yapps (2.1.1-5) unstable; urgency=low
+
+  * Add some notes.
+
+ -- Matthias Urlichs <smurf@debian.org>  Tue, 30 Dec 2003 15:33:19 +0100
+
 yapps (2.1.1-4) unstable; urgency=low
 
   * Correctly report syntax errors without line number
