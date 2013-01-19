@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 #
 # Yapps 2 - yet another python parser system
@@ -15,6 +15,7 @@ import sys, re
 
 from yapps import runtime, parsetree
 
+
 def generate(inputfilename, outputfilename='', dump=0, **flags):
     """Generate a grammar, given an input filename (X.g)
     and an output filename (defaulting to X.py)."""
@@ -24,7 +25,7 @@ def generate(inputfilename, outputfilename='', dump=0, **flags):
             outputfilename = inputfilename[:-2] + '.py'
         else:
             raise Exception('Must specify output filename if input filename is not *.g')
-        
+
     DIVIDER = '\n%%\n' # This pattern separates the pre/post parsers
     preparser, postparser = None, None # Code before and after the parser desc
 
@@ -57,7 +58,7 @@ def generate(inputfilename, outputfilename='', dump=0, **flags):
             print >>sys.stderr, 'Warning: unrecognized option', f
     # Add command line options to the set
     for f in flags.keys(): t.options[f] = flags[f]
-            
+
     # Generate the output
     if dump:
         t.dump_information()
@@ -66,7 +67,8 @@ def generate(inputfilename, outputfilename='', dump=0, **flags):
         t.generate_output()
     return 0
 
-if __name__ == '__main__':
+
+def main():
     import doctest
     doctest.testmod(sys.modules['__main__'])
     doctest.testmod(parsetree)
@@ -109,5 +111,8 @@ if __name__ == '__main__':
             import yapps_grammar as grammar
         else:
             from yapps import grammar
-            
+
         sys.exit(generate(*tuple(args), **flags))
+
+
+if __name__ == '__main__': main()
