@@ -48,6 +48,6 @@ or [virtualenv](http://pypi.python.org/pypi/virtualenv) to do unprivileged
 installs into custom paths.
 
 Alternatively, `./yapps2` can be run right from the checkout tree, without any
-installation, just run "python setup.py build" beforehand.
+installation.
 
 No extra package dependencies.
