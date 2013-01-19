@@ -107,6 +107,7 @@ def main():
                 else:
                     print >>sys.stderr, 'Warning: unrecognized option', opt[0], opt[1]
 
+        global grammar
         if use_devel_grammar:
             import yapps_grammar as grammar
         else:
