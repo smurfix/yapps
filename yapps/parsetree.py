@@ -21,6 +21,7 @@ import sys, re
 
 ######################################################################
 INDENT = ' '*4
+
 class Generator:
 
     # TODO: many of the methods here should be class methods, not instance methods
@@ -61,7 +62,7 @@ class Generator:
         self.output = sys.stdout
 
     def has_option(self, name):
-        return self.options.get(name, 0)
+        return self.options.get(name, False)
 
     def non_ignored_tokens(self):
         return [x for x in self.terminals if x not in self.ignore]
@@ -202,7 +203,7 @@ class Generator:
         assert type(a) == type([])
         a_set = (repr(a)[1:-1])
         if self.equal_set(a, self.non_ignored_tokens()): a_set = ''
-        if self.has_option('context-insensitive-scanner'): a_set = ''
+        if self.has_option('context_insensitive_scanner'): a_set = ''
         if a_set: a_set += ","
 
         return 'self._peek(%s context=_context)' % a_set
@@ -211,7 +212,7 @@ class Generator:
         """Generate a call to test whether the next token (which could be any of
         the elements in a) is in the set b."""
         if self.subset(a, b): return '1'
-        if self.has_option('context-insensitive-scanner'): a = self.non_ignored_tokens()
+        if self.has_option('context_insensitive_scanner'): a = self.non_ignored_tokens()
         return self.in_test(self.peek_call(a), a, b)
 
     def not_peek_test(self, a, b):
@@ -517,7 +518,7 @@ class Choice(Node):
         gen.write(indent, "_token = ", gen.peek_call(self.first), "\n")
         tokens_seen = []
         tokens_unseen = self.first[:]
-        if gen.has_option('context-insensitive-scanner'):
+        if gen.has_option('context_insensitive_scanner'):
             # Context insensitive scanners can return ANY token,
             # not only the ones in first.
             tokens_unseen = gen.non_ignored_tokens()
@@ -601,7 +602,7 @@ class Option(Wrapper):
                   gen.peek_test(self.first, self.child.first))
         self.child.output(gen, indent+INDENT)
 
-        if gen.has_option('context-insensitive-scanner'):
+        if gen.has_option('context_insensitive_scanner'):
             gen.write(indent, "if %s:\n" %
                     gen.not_peek_test(gen.non_ignored_tokens(), self.follow))
             gen.write(indent+INDENT, "raise runtime.SyntaxError(pos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(%s))\n" %
@@ -634,7 +635,7 @@ class Plus(Wrapper):
         gen.write(indent+INDENT, "if %s: break\n" %
                   gen.not_peek_test(union, self.child.first))
 
-        if gen.has_option('context-insensitive-scanner'):
+        if gen.has_option('context_insensitive_scanner'):
             gen.write(indent, "if %s:\n" %
                     gen.not_peek_test(gen.non_ignored_tokens(), self.follow))
             gen.write(indent+INDENT, "raise runtime.SyntaxError(pos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(%s))\n" %
@@ -665,7 +666,7 @@ class Star(Wrapper):
         self.child.output(gen, indent+INDENT)
 
         # TODO: need to generate tests like this in lots of rules
-        if gen.has_option('context-insensitive-scanner'):
+        if gen.has_option('context_insensitive_scanner'):
             gen.write(indent, "if %s:\n" %
                     gen.not_peek_test(gen.non_ignored_tokens(), self.follow))
             gen.write(indent+INDENT, "raise runtime.SyntaxError(pos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(%s))\n" %
