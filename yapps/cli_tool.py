@@ -82,12 +82,15 @@ def main(argv):
             ' Input path, but with .py will be used, if omitted.')
     parser.add_argument('-i', '--context-insensitive-scanner',
         action='store_true', help='Scan all tokens (see docs).')
+    parser.add_argument('-t', '--indent-with-tabs', action='store_true',
+        help='Use tabs instead of four spaces for indentation in generated code.')
     parser.add_argument('--dump', action='store_true', help='Dump out grammar information.')
     optz = parser.parse_args(argv)
 
     parser_flags = dict()
     for k in 'dump', 'context_insensitive_scanner':
         if getattr(optz, k, False): parser_flags[k] = True
+    if optz.indent_with_tabs: parsetree.INDENT = '\t' # not the cleanest way
 
     sys.exit(generate(optz.grammar_path, optz.parser_path, **parser_flags))
 
