@@ -1,0 +1,36 @@
+\begin{tocenv}
+\tocitem \@locref{htoc1}{\begin{@norefs}\@print{1}\quad{}Introduction\end{@norefs}}
+\tocitem \@locref{htoc2}{\begin{@norefs}\@print{2}\quad{}Examples\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc3}{\begin{@norefs}\@print{2.1}\quad{}Introduction to Grammars\end{@norefs}}
+\tocitem \@locref{htoc4}{\begin{@norefs}\@print{2.2}\quad{}Lisp Expressions\end{@norefs}}
+\tocitem \@locref{htoc5}{\begin{@norefs}\@print{2.3}\quad{}Calculator\end{@norefs}}
+\tocitem \@locref{htoc6}{\begin{@norefs}\@print{2.4}\quad{}Calculator with Memory\end{@norefs}}
+\end{tocenv}
+\tocitem \@locref{htoc7}{\begin{@norefs}\@print{3}\quad{}Grammars\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc8}{\begin{@norefs}\@print{3.1}\quad{}Left Factoring\end{@norefs}}
+\tocitem \@locref{htoc9}{\begin{@norefs}\@print{3.2}\quad{}Left Recursion\end{@norefs}}
+\tocitem \@locref{htoc10}{\begin{@norefs}\@print{3.3}\quad{}Ambiguous Grammars\end{@norefs}}
+\end{tocenv}
+\tocitem \@locref{htoc11}{\begin{@norefs}\@print{4}\quad{}Customization\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc12}{\begin{@norefs}\@print{4.1}\quad{}Customizing Parsers\end{@norefs}}
+\tocitem \@locref{htoc13}{\begin{@norefs}\@print{4.2}\quad{}Customizing Scanners\end{@norefs}}
+\end{tocenv}
+\tocitem \@locref{htoc14}{\begin{@norefs}\@print{5}\quad{}Parser Mechanics\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc15}{\begin{@norefs}\@print{5.1}\quad{}Parser Objects\end{@norefs}}
+\tocitem \@locref{htoc16}{\begin{@norefs}\@print{5.2}\quad{}Context Sensitive Scanner\end{@norefs}}
+\tocitem \@locref{htoc17}{\begin{@norefs}\@print{5.3}\quad{}Internal Variables\end{@norefs}}
+\tocitem \@locref{htoc18}{\begin{@norefs}\@print{5.4}\quad{}Pre- and Post-Parser Code\end{@norefs}}
+\tocitem \@locref{htoc19}{\begin{@norefs}\@print{5.5}\quad{}Representation of Grammars\end{@norefs}}
+\end{tocenv}
+\tocitem \@locref{htoc20}{\begin{@norefs}\@print{A}\quad{}Grammar for Parsers\end{@norefs}}
+\tocitem \@locref{htoc21}{\begin{@norefs}\@print{B}\quad{}Upgrading\end{@norefs}}
+\tocitem \@locref{htoc22}{\begin{@norefs}\@print{C}\quad{}Troubleshooting\end{@norefs}}
+\tocitem \@locref{htoc23}{\begin{@norefs}\@print{D}\quad{}History\end{@norefs}}
+\tocitem \@locref{htoc24}{\begin{@norefs}\@print{E}\quad{}Debian Extensions\end{@norefs}}
+\tocitem \@locref{htoc25}{\begin{@norefs}\@print{F}\quad{}Future Extensions\end{@norefs}}
+\tocitem \@locref{htoc26}{\begin{@norefs}\@print{G}\quad{}References\end{@norefs}}
+\end{tocenv}

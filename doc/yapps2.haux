@@ -1,0 +1,31 @@
+\@addtocsec{htoc}{1}{0}{\@print{1}\quad{}Introduction}
+\@addtocsec{htoc}{2}{0}{\@print{2}\quad{}Examples}
+\@addtocsec{htoc}{3}{1}{\@print{2.1}\quad{}Introduction to Grammars}
+\@addtocsec{htoc}{4}{1}{\@print{2.2}\quad{}Lisp Expressions}
+\@addtocsec{htoc}{5}{1}{\@print{2.3}\quad{}Calculator}
+\@addtocsec{htoc}{6}{1}{\@print{2.4}\quad{}Calculator with Memory}
+\@addtocsec{htoc}{7}{0}{\@print{3}\quad{}Grammars}
+\@addtocsec{htoc}{8}{1}{\@print{3.1}\quad{}Left Factoring}
+\newlabel{sec:Left-Factoring}{{3.1}{X}}
+\@addtocsec{htoc}{9}{1}{\@print{3.2}\quad{}Left Recursion}
+\@addtocsec{htoc}{10}{1}{\@print{3.3}\quad{}Ambiguous Grammars}
+\newlabel{sec:Ambiguous-Grammars}{{3.3}{X}}
+\@addtocsec{htoc}{11}{0}{\@print{4}\quad{}Customization}
+\@addtocsec{htoc}{12}{1}{\@print{4.1}\quad{}Customizing Parsers}
+\@addtocsec{htoc}{13}{1}{\@print{4.2}\quad{}Customizing Scanners}
+\@addtocsec{htoc}{14}{0}{\@print{5}\quad{}Parser Mechanics}
+\@addtocsec{htoc}{15}{1}{\@print{5.1}\quad{}Parser Objects}
+\newlabel{sec:Parser-Objects}{{5.1}{X}}
+\@addtocsec{htoc}{16}{1}{\@print{5.2}\quad{}Context Sensitive Scanner}
+\@addtocsec{htoc}{17}{1}{\@print{5.3}\quad{}Internal Variables}
+\@addtocsec{htoc}{18}{1}{\@print{5.4}\quad{}Pre- and Post-Parser Code}
+\@addtocsec{htoc}{19}{1}{\@print{5.5}\quad{}Representation of Grammars}
+\@addtocsec{htoc}{20}{0}{\@print{A}\quad{}Grammar for Parsers}
+\@addtocsec{htoc}{21}{0}{\@print{B}\quad{}Upgrading}
+\@addtocsec{htoc}{22}{0}{\@print{C}\quad{}Troubleshooting}
+\@addtocsec{htoc}{23}{0}{\@print{D}\quad{}History}
+\@addtocsec{htoc}{24}{0}{\@print{E}\quad{}Debian Extensions}
+\newlabel{sec:debian}{{E}{X}}
+\@addtocsec{htoc}{25}{0}{\@print{F}\quad{}Future Extensions}
+\newlabel{sec:future}{{F}{X}}
+\@addtocsec{htoc}{26}{0}{\@print{G}\quad{}References}

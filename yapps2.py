@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python
 
 #
 # Yapps 2 - yet another python parser system
@@ -13,7 +13,7 @@
 
 import sys, re
 
-import yappsrt, parsetree
+from yapps import runtime, parsetree
 
 def generate(inputfilename, outputfilename='', dump=0, **flags):
     """Generate a grammar, given an input filename (X.g)
@@ -40,11 +40,12 @@ def generate(inputfilename, outputfilename='', dump=0, **flags):
     if f >= 0: s, postparser = s[:f], '\n\n'+s[f+len(DIVIDER):]
 
     # Create the parser and scanner and parse the text
-    scanner = grammar.ParserDescriptionScanner(s)
-    if preparser: scanner.first_line_number = 1 + preparser.count('\n')
+    scanner = grammar.ParserDescriptionScanner(s, filename=inputfilename)
+    if preparser: scanner.del_line += preparser.count('\n')
+
     parser = grammar.ParserDescription(scanner)
-    t = yappsrt.wrap_error_reporter(parser, 'Parser')
-    if t is None: return # Failure
+    t = runtime.wrap_error_reporter(parser, 'Parser')
+    if t is None: return 1 # Failure
     if preparser is not None: t.preparser = preparser
     if postparser is not None: t.postparser = postparser
 
@@ -63,6 +64,7 @@ def generate(inputfilename, outputfilename='', dump=0, **flags):
     else:
         t.output = open(outputfilename, 'w')
         t.generate_output()
+    return 0
 
 if __name__ == '__main__':
     import doctest
@@ -106,6 +108,6 @@ if __name__ == '__main__':
         if use_devel_grammar:
             import yapps_grammar as grammar
         else:
-            import grammar
+            from yapps import grammar
             
-        generate(*tuple(args), **flags)
+        sys.exit(generate(*tuple(args), **flags))

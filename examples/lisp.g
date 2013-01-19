@@ -1,5 +1,3 @@
-# This parser can parse a simple subset of Lisp's syntax.
-
 parser Lisp:
     ignore:      r'\s+'
     token NUM:   r'[0-9]+'

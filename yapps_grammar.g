@@ -1,7 +1,6 @@
-#!/usr/bin/python2
-#
 # grammar.py, part of Yapps 2 - yet another python parser system
 # Copyright 1999-2003 by Amit J. Patel <amitp@cs.stanford.edu>
+# Enhancements copyright 2003-2004 by Matthias Urlichs <smurf@debian.org>
 #
 # This version of the Yapps 2 grammar can be distributed under the
 # terms of the MIT open source license, either found in the LICENSE
@@ -19,7 +18,7 @@ by running Yapps on yapps_grammar.g.  (Holy circularity, Batman!)
 """
 
 import sys, re
-import parsetree
+from yapps import parsetree
 
 ######################################################################
 def cleanup_choice(rule, lst):
@@ -33,9 +32,9 @@ def cleanup_sequence(rule, lst):
 
 def resolve_name(rule, tokens, id, args):
     if id in [x[0] for x in tokens]:
-        # It's a token
-        if args:
-            print 'Warning: ignoring parameters on TOKEN %s<<%s>>' % (id, args)
+	# It's a token
+	if args:
+	    print 'Warning: ignoring parameters on TOKEN %s<<%s>>' % (id, args)
         return parsetree.Terminal(rule, id)
     else:
         # It's a name, so assume it's a nonterminal
@@ -43,7 +42,6 @@ def resolve_name(rule, tokens, id, args):
 
 %%
 parser ParserDescription:
-    option:      "context-insensitive-scanner"
 
     ignore:      "[ \t\r\n]+"
     ignore:      "#.*?\r?\n"
@@ -62,9 +60,6 @@ parser ParserDescription:
     token QUEST: '[?]'
     token COLON: ':'
 
-    rule LINENO: # This is a pseudotoken.  It matches nothing; returns the line number
-                 {{ return 1 + self._scanner.get_input_scanned().count('\n') }}
-    
     rule Parser: "parser" ID ":"
                    Options
                    Tokens
@@ -79,48 +74,48 @@ parser ParserDescription:
     rule Tokens:  {{ tok = [] }}
                   (
                     "token" ID ":" Str {{ tok.append( (ID,Str) ) }}
-                  | "ignore"   ":" Str {{ tok.append( ('#ignore',Str) ) }}
+                  | "ignore"
+				    ":" Str {{ ign = ('#ignore',Str) }}
+				    ( STMT  {{ ign = ign + (STMT[2:-2],) }} )?
+				            {{ tok.append( ign ) }}
                   )*
                   {{ return tok }}
 
     rule Rules<<tokens>>:
                   {{ rul = [] }}
-                  ( LINENO
+                  (
                     "rule" ID OptParam ":" ClauseA<<ID, tokens>>
-                    # TODO: save LINENO somewhere?
                     {{ rul.append( (ID, OptParam, ClauseA) ) }}
                   )*
                   {{ return rul }}
 
     rule ClauseA<<rule, tokens>>:
-                  ClauseB<<rule, tokens>>
+                  ClauseB<<rule,tokens>>
                   {{ v = [ClauseB] }}
-                  ( OR ClauseB<<rule, tokens>> {{ v.append(ClauseB) }} )*
-                  {{ return cleanup_choice(rule, v) }}
+                  ( OR ClauseB<<rule,tokens>> {{ v.append(ClauseB) }} )*
+                  {{ return cleanup_choice(rule,v) }}
 
-    rule ClauseB<<rule, tokens>>:
+    rule ClauseB<<rule,tokens>>:
                   {{ v = [] }}
-                  ( ClauseC<<rule, tokens>> {{ v.append(ClauseC) }} )*
+                  ( ClauseC<<rule,tokens>> {{ v.append(ClauseC) }} )*
                   {{ return cleanup_sequence(rule, v) }}
 
-    rule ClauseC<<rule, tokens>>:
-                  ClauseD<<rule, tokens>>
+    rule ClauseC<<rule,tokens>>:
+                  ClauseD<<rule,tokens>>
                   ( PLUS {{ return parsetree.Plus(rule, ClauseD) }}
                   | STAR {{ return parsetree.Star(rule, ClauseD) }}
                   | QUEST {{ return parsetree.Option(rule, ClauseD) }}
                   |      {{ return ClauseD }} )
 
-    rule ClauseD<<rule, tokens>>:
+    rule ClauseD<<rule,tokens>>:
                   STR {{ t = (STR, eval(STR,{},{})) }}
                       {{ if t not in tokens: tokens.insert( 0, t ) }}
                       {{ return parsetree.Terminal(rule, STR) }}
-                | ID OptParam {{ return resolve_name(rule, tokens, ID, OptParam) }}
-                | LP ClauseA<<rule, tokens>> RP {{ return ClauseA }}
-                | LB ClauseA<<rule, tokens>> RB {{ return parsetree.Option(rule, ClauseA) }}
+                | ID OptParam {{ return resolve_name(rule,tokens, ID, OptParam) }}
+                | LP ClauseA<<rule,tokens>> RP {{ return ClauseA }}
+                | LB ClauseA<<rule,tokens>> RB {{ return parsetree.Option(rule, ClauseA) }}
                 | STMT {{ return parsetree.Eval(rule, STMT[2:-2]) }}
 
-    rule OptParam:
-                  ATTR {{ return ATTR[2:-2] }}
-                |      {{ return '' }}
+    rule OptParam: [ ATTR {{ return ATTR[2:-2] }} ] {{ return '' }}
     rule Str:   STR {{ return eval(STR,{},{}) }}
 %%
