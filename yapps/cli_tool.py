@@ -68,7 +68,7 @@ def generate(inputfilename, outputfilename=None, dump=0, **flags):
     return 0
 
 
-def main(argv):
+def main(argv=None):
     import doctest
     doctest.testmod(sys.modules['__main__'])
     doctest.testmod(parsetree)
@@ -85,7 +85,7 @@ def main(argv):
     parser.add_argument('-t', '--indent-with-tabs', action='store_true',
         help='Use tabs instead of four spaces for indentation in generated code.')
     parser.add_argument('--dump', action='store_true', help='Dump out grammar information.')
-    optz = parser.parse_args(argv)
+    optz = parser.parse_args(argv if argv is not None else sys.argv[1:])
 
     parser_flags = dict()
     for k in 'dump', 'context_insensitive_scanner':
@@ -95,4 +95,4 @@ def main(argv):
     sys.exit(generate(optz.grammar_path, optz.parser_path, **parser_flags))
 
 
-if __name__ == '__main__': main(sys.argv[1:])
+if __name__ == '__main__': main()
