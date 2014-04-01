@@ -11,7 +11,7 @@ except IOError: readme = ''
 
 setup(
     name = 'yapps',
-    version = '13.01.8',
+    version = '14.04.0',
     author = 'Amit J. Patel, Matthias Urlichs',
     author_email = 'amitp@cs.stanford.edu, smurf@debian.org',
     maintainer = 'Mike Kazantsev',

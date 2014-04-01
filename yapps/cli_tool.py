@@ -11,7 +11,7 @@
 # <http://www.opensource.org/licenses/mit-license.php>
 #
 
-import os, sys, re
+import os, sys, re, types
 
 try: from yapps import runtime, parsetree, grammar
 except ImportError:
@@ -22,13 +22,15 @@ except ImportError:
     else: raise
 
 
-def generate(inputfilename, outputfilename=None, dump=0, **flags):
+def generate(inputfile, outputfile=None, dump=0, **flags):
     """Generate a grammar, given an input filename (X.g)
     and an output filename (defaulting to X.py)."""
 
-    if not outputfilename:
+    inputfilename = inputfile if isinstance(
+        inputfile, types.StringTypes ) else inputfile.name
+    if not outputfile:
         if inputfilename.endswith('.g'):
-            outputfilename = inputfilename[:-2] + '.py'
+            outputfile = inputfilename[:-2] + '.py'
         else:
             raise Exception('Must specify output filename if input filename is not *.g')
 
@@ -36,7 +38,9 @@ def generate(inputfilename, outputfilename=None, dump=0, **flags):
     preparser, postparser = None, None # Code before and after the parser desc
 
     # Read the entire file
-    s = open(inputfilename,'r').read()
+    if isinstance(inputfile, types.StringTypes):
+        inputfile = open(inputfilename)
+    s = inputfile.read()
 
     # See if there's a separation between the pre-parser and parser
     f = s.find(DIVIDER)
@@ -63,7 +67,9 @@ def generate(inputfilename, outputfilename=None, dump=0, **flags):
     if dump:
         t.dump_information()
     else:
-        t.output = open(outputfilename, 'w')
+        if isinstance(outputfile, types.StringTypes):
+            outputfile = open(outputfile, 'w')
+        t.output = outputfile
         t.generate_output()
     return 0
 
@@ -79,7 +85,8 @@ def main(argv=None):
     parser.add_argument('grammar_path', help='Path to grammar description file (input).')
     parser.add_argument('parser_path', nargs='?',
         help='Path to output file to be generated.'
-            ' Input path, but with .py will be used, if omitted.')
+                ' Input path, but with .py will be used, if omitted.'
+            ' "-" or "/dev/stdout" (on some systems) can be used to output generated code to stdout.')
     parser.add_argument('-i', '--context-insensitive-scanner',
         action='store_true', help='Scan all tokens (see docs).')
     parser.add_argument('-t', '--indent-with-tabs', action='store_true',
@@ -92,7 +99,10 @@ def main(argv=None):
         if getattr(optz, k, False): parser_flags[k] = True
     if optz.indent_with_tabs: parsetree.INDENT = '\t' # not the cleanest way
 
-    sys.exit(generate(optz.grammar_path, optz.parser_path, **parser_flags))
+    outputfile = optz.parser_path
+    if outputfile == '-': outputfile = sys.stdout
+
+    sys.exit(generate(optz.grammar_path, outputfile, **parser_flags))
 
 
 if __name__ == '__main__': main()
