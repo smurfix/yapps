@@ -261,7 +261,7 @@ class Generator:
 
     def repr_ignore(self):
         out="{"
-        for t,s in self.ignore.iteritems():
+        for t,s in self.ignore.items():
             if s is None: s=repr(s)
             out += "%s:%s," % (repr(t),s)
         out += "}"
