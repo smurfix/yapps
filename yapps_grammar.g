@@ -63,8 +63,8 @@ parser ParserDescription:
     rule Parser: "parser" ID ":"
                    Options
                    Tokens
-                   Rules<<Tokens>>
-                 EOF
+                   Rules<<Tokens>> 
+                 EOF 
                  {{ return parsetree.Generator(ID,Options,Tokens,Rules) }}
 
     rule Options: {{ opt = {} }}
@@ -74,7 +74,7 @@ parser ParserDescription:
     rule Tokens:  {{ tok = [] }}
                   (
                     "token" ID ":" Str {{ tok.append( (ID,Str) ) }}
-                  | "ignore"
+                  | "ignore"  
 				    ":" Str {{ ign = ('#ignore',Str) }}
 				    ( STMT  {{ ign = ign + (STMT[2:-2],) }} )?
 				            {{ tok.append( ign ) }}
@@ -109,7 +109,7 @@ parser ParserDescription:
 
     rule ClauseD<<rule,tokens>>:
                   STR {{ t = (STR, eval(STR,{},{})) }}
-                      {{ if t not in tokens: tokens.insert( 0, t ) }}
+                      {{ if t not in tokens: tokens.insert( 0, t ) }} 
                       {{ return parsetree.Terminal(rule, STR) }}
                 | ID OptParam {{ return resolve_name(rule,tokens, ID, OptParam) }}
                 | LP ClauseA<<rule,tokens>> RP {{ return ClauseA }}
