@@ -17,6 +17,7 @@ keeps track of the parse stack.
 
 """
 
+from __future__ import print_function
 import sys, re
 
 MIN_WINDOW=4096
@@ -414,14 +415,14 @@ def print_error(err, scanner, max_ctx=None):
         pos = scanner.get_pos()
 
     file_name, line_number, column_number = pos
-    print >>sys.stderr, '%s:%d:%d: %s' % (file_name, line_number, column_number, err.msg)
+    print('%s:%d:%d: %s' % (file_name, line_number, column_number, err.msg), file=sys.stderr)
 
     scanner.print_line_with_pointer(pos)
 
     context = err.context
     token = None
     while context:
-        print >>sys.stderr, 'while parsing %s%s:' % (context.rule, tuple(context.args))
+        print('while parsing %s%s:' % (context.rule, tuple(context.args)), file=sys.stderr)
         if context.token:
             token = context.token
         if token:
@@ -438,5 +439,5 @@ def wrap_error_reporter(parser, rule, *args,**kw):
     except SyntaxError as e:
         print_error(e, parser._scanner)
     except NoMoreTokens:
-        print >>sys.stderr, 'Could not complete parsing; stopped around here:'
-        print >>sys.stderr, parser._scanner
+        print('Could not complete parsing; stopped around here:', file=sys.stderr)
+        print(parser._scanner, file=sys.stderr)
