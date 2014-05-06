@@ -21,17 +21,18 @@ import sys, re
 
 ######################################################################
 INDENT = ' '*4
+
 class Generator:
 
     # TODO: many of the methods here should be class methods, not instance methods
-    
+
     def __init__(self, name, options, tokens, rules):
         self.change_count = 0
         self.name = name
         self.options = options
         self.preparser = ''
         self.postparser = None
-        
+
         self.tokens = {} # Map from tokens to regexps
         self.ignore = {} # List of token names to ignore in parsing, map to statements
         self.terminals = [] # List of token names (to maintain ordering)
@@ -49,7 +50,7 @@ class Generator:
                 print >>sys.stderr, 'Warning: token %s defined more than once.' % n
             self.tokens[n] = t
             self.terminals.append(n)
-            
+
         self.rules = {} # Map from rule names to parser nodes
         self.params = {} # Map from rule names to parameters
         self.goals = [] # List of rule names (to maintain ordering)
@@ -57,15 +58,15 @@ class Generator:
             self.params[n] = p
             self.rules[n] = r
             self.goals.append(n)
-            
+
         self.output = sys.stdout
 
     def has_option(self, name):
-        return self.options.get(name, 0)
-    
+        return self.options.get(name, False)
+
     def non_ignored_tokens(self):
         return [x for x in self.terminals if x not in self.ignore]
-    
+
     def changed(self):
         """Increments the change count.
 
@@ -94,7 +95,7 @@ class Generator:
             if x not in b:
                 result.append(x)
         return result
-    
+
     def subset(self, a, b):
         """True iff all elements of sequence a are inside sequence b
 
@@ -134,7 +135,7 @@ class Generator:
         if len(a) != len(b): return 0
         if a == b: return 1
         return self.subset(a, b) and self.subset(b, a)
-    
+
     def add_to(self, parent, additions):
         "Modify _parent_ to include all elements in _additions_"
         for x in additions:
@@ -167,7 +168,7 @@ class Generator:
         expr is a string (Python expression)
         set is a list of values (which will be converted with repr)
         full is the list of all values expr could possibly evaluate to
-        
+
         >>> t = Generator('', [], [], [])
         >>> t.in_test('x', [1,2,3,4], [])
         '0'
@@ -182,7 +183,7 @@ class Generator:
         >>> t.in_test('x', [1,2,3,4,5], [1,2,3,4])
         'x != 5'
         """
-        
+
         if not set: return '0'
         if len(set) == 1: return '%s == %s' % (expr, repr(set[0]))
         if full and len(set) > len(full)/2:
@@ -190,7 +191,7 @@ class Generator:
             not_set = [x for x in full if x not in set]
             return self.not_in_test(expr, full, not_set)
         return '%s in %s' % (expr, repr(set))
-    
+
     def not_in_test(self, expr, full, set):
         """Like in_test, but the reverse test."""
         if not set: return '1'
@@ -202,16 +203,16 @@ class Generator:
         assert type(a) == type([])
         a_set = (repr(a)[1:-1])
         if self.equal_set(a, self.non_ignored_tokens()): a_set = ''
-        if self.has_option('context-insensitive-scanner'): a_set = ''
+        if self.has_option('context_insensitive_scanner'): a_set = ''
         if a_set: a_set += ","
-        
+
         return 'self._peek(%s context=_context)' % a_set
-    
+
     def peek_test(self, a, b):
         """Generate a call to test whether the next token (which could be any of
         the elements in a) is in the set b."""
         if self.subset(a, b): return '1'
-        if self.has_option('context-insensitive-scanner'): a = self.non_ignored_tokens()
+        if self.has_option('context_insensitive_scanner'): a = self.non_ignored_tokens()
         return self.in_test(self.peek_call(a), a, b)
 
     def not_peek_test(self, a, b):
@@ -257,7 +258,7 @@ class Generator:
                 print '     FIRST:', ', '.join(top.first+eps)
                 print '    FOLLOW:', ', '.join(top.follow)
                 for x in top.get_children(): queue.append(x)
-                
+
     def repr_ignore(self):
         out="{"
         for t,s in self.ignore.iteritems():
@@ -265,7 +266,7 @@ class Generator:
             out += "%s:%s," % (repr(t),s)
         out += "}"
         return out
-        
+
     def generate_output(self):
         self.calculate()
         self.write(self.preparser)
@@ -274,31 +275,31 @@ class Generator:
         self.write("from yapps import runtime\n")
         self.write("\n")
         self.write("class ", self.name, "Scanner(runtime.Scanner):\n")
-        self.write("    patterns = [\n")
+        self.write(INDENT, "patterns = [\n")
         for p in self.terminals:
-            self.write("        (%s, re.compile(%s)),\n" % (
+            self.write(INDENT*2, "(%s, re.compile(%s)),\n" % (
                 repr(p), repr(self.tokens[p])))
-        self.write("    ]\n")
-        self.write("    def __init__(self, str,*args,**kw):\n")
-        self.write("        runtime.Scanner.__init__(self,None,%s,str,*args,**kw)\n" %
+        self.write(INDENT, "]\n")
+        self.write(INDENT, "def __init__(self, str,*args,**kw):\n")
+        self.write(INDENT*2, "runtime.Scanner.__init__(self,None,%s,str,*args,**kw)\n" %
                    self.repr_ignore())
         self.write("\n")
-        
+
         self.write("class ", self.name, "(runtime.Parser):\n")
         self.write(INDENT, "Context = runtime.Context\n")
         for r in self.goals:
             self.write(INDENT, "def ", r, "(self")
             if self.params[r]: self.write(", ", self.params[r])
             self.write(", _parent=None):\n")
-            self.write(INDENT+INDENT, "_context = self.Context(_parent, self._scanner, %s, [%s])\n" %
+            self.write(INDENT*2, "_context = self.Context(_parent, self._scanner, %s, [%s])\n" %
                        (repr(r), self.params.get(r, '')))
-            self.rules[r].output(self, INDENT+INDENT)
+            self.rules[r].output(self, INDENT*2)
             self.write("\n")
 
         self.write("\n")
         self.write("def parse(rule, text):\n")
-        self.write("    P = ", self.name, "(", self.name, "Scanner(text))\n")
-        self.write("    return runtime.wrap_error_reporter(P, rule)\n")
+        self.write(INDENT, "P = ", self.name, "(", self.name, "Scanner(text))\n")
+        self.write(INDENT, "return runtime.wrap_error_reporter(P, rule)\n")
         self.write("\n")
         if self.postparser is not None:
             self.write("# End -- grammar generated by Yapps\n")
@@ -323,13 +324,13 @@ class Node:
         self.first = []
         self.follow = []
         self.accepts_epsilon = 0
-        
+
     def setup(self, gen):
         # Setup will change accepts_epsilon,
         # sometimes from 0 to 1 but never 1 to 0.
         # It will take a finite number of steps to set things up
         pass
-    
+
     def used(self, vars):
         "Return two lists: one of vars used, and the other of vars assigned"
         return vars, []
@@ -337,10 +338,10 @@ class Node:
     def get_children(self):
         "Return a list of sub-nodes"
         return []
-    
+
     def __repr__(self):
         return str(self)
-    
+
     def update(self, gen):
         if self.accepts_epsilon:
             gen.add_to(self.first, self.follow)
@@ -348,7 +349,7 @@ class Node:
     def output(self, gen, indent):
         "Write out code to _gen_ with _indent_:string indentation"
         gen.write(indent, "assert 0 # Invalid parser node\n")
-    
+
 class Terminal(Node):
     """This class stores terminal nodes, which are tokens."""
     def __init__(self, rule, token):
@@ -370,7 +371,7 @@ class Terminal(Node):
         if re.match('[a-zA-Z_][a-zA-Z_0-9]*$', self.token):
             gen.write(self.token, " = ")
         gen.write("self._scan(%s, context=_context)\n" % repr(self.token))
-        
+
 class Eval(Node):
     """This class stores evaluation nodes, from {{ ... }} clauses."""
     def __init__(self, rule, expr):
@@ -388,7 +389,7 @@ class Eval(Node):
 
     def output(self, gen, indent):
         gen.write(indent, self.expr.strip(), '\n')
-        
+
 class NonTerminal(Node):
     """This class stores nonterminal nodes, which are rules with arguments."""
     def __init__(self, rule, name, args):
@@ -406,7 +407,7 @@ class NonTerminal(Node):
         except KeyError: # Oops, it's nonexistent
             print >>sys.stderr, 'Error: no rule <%s>' % self.name
             self.target = self
-            
+
     def __str__(self):
         return '%s' % self.name
 
@@ -422,7 +423,7 @@ class NonTerminal(Node):
         if args: args += ', '
         args += '_context'
         gen.write("self.", self.name, "(", args, ")\n")
-        
+
 class Sequence(Node):
     """This class stores a sequence of nodes (A B C ...)"""
     def __init__(self, rule, *children):
@@ -432,7 +433,7 @@ class Sequence(Node):
     def setup(self, gen):
         Node.setup(self, gen)
         for c in self.children: c.setup(gen)
-        
+
         if not self.accepts_epsilon:
             # If it's not already accepting epsilon, it might now do so.
             for c in self.children:
@@ -444,7 +445,7 @@ class Sequence(Node):
 
     def get_children(self):
         return self.children
-    
+
     def __str__(self):
         return '( %s )' % ' '.join(map(str, self.children))
 
@@ -459,7 +460,7 @@ class Sequence(Node):
 
             if empty: gen.add_to(self.first, g.first)
             if not g.accepts_epsilon: empty = 0
-            
+
             if g_i == len(self.children)-1:
                 next = self.follow
             else:
@@ -476,7 +477,7 @@ class Sequence(Node):
         else:
             # Placeholder for empty sequences, just in case
             gen.write(indent, 'pass\n')
-            
+
 class Choice(Node):
     """This class stores a choice between nodes (A | B | C | ...)"""
     def __init__(self, rule, *children):
@@ -486,7 +487,7 @@ class Choice(Node):
     def setup(self, gen):
         Node.setup(self, gen)
         for c in self.children: c.setup(gen)
-            
+
         if not self.accepts_epsilon:
             for c in self.children:
                 if c.accepts_epsilon:
@@ -495,7 +496,7 @@ class Choice(Node):
 
     def get_children(self):
         return self.children
-    
+
     def __str__(self):
         return '( %s )' % ' | '.join(map(str, self.children))
 
@@ -517,7 +518,7 @@ class Choice(Node):
         gen.write(indent, "_token = ", gen.peek_call(self.first), "\n")
         tokens_seen = []
         tokens_unseen = self.first[:]
-        if gen.has_option('context-insensitive-scanner'):
+        if gen.has_option('context_insensitive_scanner'):
             # Context insensitive scanners can return ANY token,
             # not only the ones in first.
             tokens_unseen = gen.non_ignored_tokens()
@@ -538,7 +539,7 @@ class Choice(Node):
                 print >>sys.stderr, ' *', self
                 print >>sys.stderr, ' * These tokens could be matched by more than one clause:'
                 print >>sys.stderr, ' *', ' '.join(removed)
-                
+
             if testset:
                 if not tokens_unseen: # context sensitive scanners only!
                     if test == 'if':
@@ -563,7 +564,7 @@ class Choice(Node):
             gen.write(indent, "else:\n")
             gen.write(indent, INDENT, "raise runtime.SyntaxError(_token[0], ")
             gen.write("'Could not match ", self.rule, "')\n")
-        
+
 class Wrapper(Node):
     """This is a base class for nodes that modify a single child."""
     def __init__(self, rule, child):
@@ -576,7 +577,7 @@ class Wrapper(Node):
 
     def get_children(self):
         return [self.child]
-    
+
     def update(self, gen):
         Node.update(self, gen)
         self.child.update(gen)
@@ -601,13 +602,13 @@ class Option(Wrapper):
                   gen.peek_test(self.first, self.child.first))
         self.child.output(gen, indent+INDENT)
 
-        if gen.has_option('context-insensitive-scanner'):
+        if gen.has_option('context_insensitive_scanner'):
             gen.write(indent, "if %s:\n" %
                     gen.not_peek_test(gen.non_ignored_tokens(), self.follow))
             gen.write(indent+INDENT, "raise runtime.SyntaxError(pos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(%s))\n" %
                     repr(self.first))
 
-        
+
 class Plus(Wrapper):
     """This class represents a 1-or-more repetition clause of the form A+"""
     def setup(self, gen):
@@ -622,7 +623,7 @@ class Plus(Wrapper):
     def update(self, gen):
         Wrapper.update(self, gen)
         gen.add_to(self.child.follow, self.child.first)
-        
+
     def output(self, gen, indent):
         if self.child.accepts_epsilon:
             print >>sys.stderr, 'Warning in rule', self.rule+':'
@@ -634,7 +635,7 @@ class Plus(Wrapper):
         gen.write(indent+INDENT, "if %s: break\n" %
                   gen.not_peek_test(union, self.child.first))
 
-        if gen.has_option('context-insensitive-scanner'):
+        if gen.has_option('context_insensitive_scanner'):
             gen.write(indent, "if %s:\n" %
                     gen.not_peek_test(gen.non_ignored_tokens(), self.follow))
             gen.write(indent+INDENT, "raise runtime.SyntaxError(pos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(%s))\n" %
@@ -655,7 +656,7 @@ class Star(Wrapper):
     def update(self, gen):
         Wrapper.update(self, gen)
         gen.add_to(self.child.follow, self.child.first)
-        
+
     def output(self, gen, indent):
         if self.child.accepts_epsilon:
             print >>sys.stderr, 'Warning in rule', self.rule+':'
@@ -665,9 +666,8 @@ class Star(Wrapper):
         self.child.output(gen, indent+INDENT)
 
         # TODO: need to generate tests like this in lots of rules
-        if gen.has_option('context-insensitive-scanner'):
+        if gen.has_option('context_insensitive_scanner'):
             gen.write(indent, "if %s:\n" %
                     gen.not_peek_test(gen.non_ignored_tokens(), self.follow))
             gen.write(indent+INDENT, "raise runtime.SyntaxError(pos=self._scanner.get_pos(), context=_context, msg='Need one of ' + ', '.join(%s))\n" %
                     repr(self.first))
-
