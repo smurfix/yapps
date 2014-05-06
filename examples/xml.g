@@ -61,6 +61,6 @@ if __name__ == '__main__':
         try:
             parser = xml(xmlScanner(test))
             output = '%s ==> %s' % (repr(test), repr(parser.node()))
-        except (yappsrt.SyntaxError, AssertionError), e:
+        except (yappsrt.SyntaxError, AssertionError) as e:
             output = '%s ==> FAILED ==> %s' % (repr(test), e)
         print output

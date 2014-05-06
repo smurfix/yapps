@@ -243,20 +243,20 @@ class Generator:
         """Display the grammar in somewhat human-readable form."""
         self.calculate()
         for r in self.goals:
-            print '    _____' + '_'*len(r)
-            print ('___/Rule '+r+'\\' + '_'*80)[:79]
+            print('    _____' + '_'*len(r))
+            print(('___/Rule '+r+'\\' + '_'*80)[:79])
             queue = [self.rules[r]]
             while queue:
                 top = queue[0]
                 del queue[0]
 
-                print 'Rule', repr(top), 'of class', top.__class__.__name__
+                print('Rule', repr(top), 'of class', top.__class__.__name__)
                 top.first.sort()
                 top.follow.sort()
                 eps = []
                 if top.accepts_epsilon: eps = ['(null)']
-                print '     FIRST:', ', '.join(top.first+eps)
-                print '    FOLLOW:', ', '.join(top.follow)
+                print('     FIRST:', ', '.join(top.first+eps))
+                print('    FOLLOW:', ', '.join(top.follow))
                 for x in top.get_children(): queue.append(x)
 
     def repr_ignore(self):

@@ -36,7 +36,7 @@ If you want to report errors correctly in that situation, do this:
 
 			P = whatever(whateverScanner("", filename=a, file=f))
 			try: P.goal()
-			except runtime.SyntaxError, e:
+			except runtime.SyntaxError as e:
 				runtime.print_error(e, P._scanner)
 				sys.exit(1)
 
