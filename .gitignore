@@ -5,3 +5,4 @@
 /README.txt
 *.pyc
 *.pyo
+/examples/expr.py
