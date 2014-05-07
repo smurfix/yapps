@@ -17,5 +17,5 @@ parser Calculator:
                        )*                 {{ return v }}
 
     # A term is either a number or an expression surrounded by parentheses
-    rule term:           NUM              {{ return atoi(NUM) }}
+    rule term:           NUM              {{ return int(NUM) }}
                        | "\\(" expr "\\)" {{ return expr }}

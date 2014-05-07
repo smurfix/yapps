@@ -12,6 +12,12 @@
 #
 
 import os, sys, re, types
+#from six import string_types
+PY2 = sys.version_info[0] == 2
+if PY2:
+	string_types = (basestring,)
+else:
+	string_types = (str,)
 
 try: from yapps import runtime, parsetree, grammar
 except ImportError:
@@ -27,7 +33,7 @@ def generate(inputfile, outputfile=None, dump=0, **flags):
     and an output filename (defaulting to X.py)."""
 
     inputfilename = inputfile if isinstance(
-        inputfile, types.StringTypes ) else inputfile.name
+        inputfile, string_types ) else inputfile.name
     if not outputfile:
         if inputfilename.endswith('.g'):
             outputfile = inputfilename[:-2] + '.py'
@@ -38,7 +44,7 @@ def generate(inputfile, outputfile=None, dump=0, **flags):
     preparser, postparser = None, None # Code before and after the parser desc
 
     # Read the entire file
-    if isinstance(inputfile, types.StringTypes):
+    if isinstance(inputfile, string_types):
         inputfile = open(inputfilename)
     s = inputfile.read()
 
@@ -67,7 +73,7 @@ def generate(inputfile, outputfile=None, dump=0, **flags):
     if dump:
         t.dump_information()
     else:
-        if isinstance(outputfile, types.StringTypes):
+        if isinstance(outputfile, string_types):
             outputfile = open(outputfile, 'w')
         t.output = outputfile
         t.generate_output()
