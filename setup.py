@@ -2,6 +2,7 @@
 
 from setuptools import setup, find_packages
 import os
+from yapps import __version__ as version
 
 pkg_root = os.path.dirname(__file__)
 
@@ -10,8 +11,8 @@ try: readme = open(os.path.join(pkg_root, 'README.txt')).read()
 except IOError: readme = ''
 
 setup(
-    name = 'yapps',
-    version = '14.04.0',
+    name = 'Yapps2',
+    version = version,
     author = 'Amit J. Patel, Matthias Urlichs',
     author_email = 'amitp@cs.stanford.edu, smurf@debian.org',
     maintainer = 'Mike Kazantsev',
