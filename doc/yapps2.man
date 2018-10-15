@@ -1,0 +1,35 @@
+.TH YAPPS2 1
+.SH NAME
+yapps2 \- generate python parser code from grammar description file
+.SH SYNOPSIS
+.B yapps2
+[\fB\-h\fR]
+[\fB\-i\fR, \fB\-\-context-insensitive-scanner\fR]
+[\fB\-t\fR, \fB\-\-indent-with-tabs\fR]
+[\fB\-\-dump\fR]
+.IR grammar_file [ parser_file ]
+.SH DESCRIPTION
+.B yapps2
+generates python parser code from a grammar description file.
+.SH OPTIONS
+.TP
+.BR \-h ", " \-\-help\fR
+show a help message and exit
+.TP
+.BR \-i ", " \-\-context-insensitive-scanner\fR
+Scan all tokens. See the documentation for details.
+.TP
+.BR \-t ", " \-\-indent-with-tabs\fR
+Use tabs instead of four spaces for indentation in generated code.
+.TP
+.BR \-\-dump\fR
+Dump out grammar information.
+.TP
+.BR grammar_file
+grammar description file (input)
+.TP
+.BR parser_file
+Name of the output file to be generated.
+.BR
+The grammar file's name, with .py appended, will be used, if omitted.
+\"-\" or \"/dev/stdout\" can be used to send generated code to stdout.
