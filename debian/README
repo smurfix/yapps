@@ -1,0 +1,23 @@
+The Debian Package yapps2
+-------------------------
+
+This package contains several upward-compatible enhancements to the
+original YAPPS source:
+- Handle stacked input ("include files")
+- augmented ignore-able patterns
+  (this means that yapps2 now can parse things like multi-line C comments)
+- better error reporting
+- read input incrementally
+
+Traditionally, the yapps runtime is called yappsrt.py and it was
+installed with the binary that uses the parser. However, as soon as
+there is more than one of those, this method breaks.
+
+Therefore, and because the new runtime isn't entirely compatible to the
+old yappsrt.py, I decided to rename the generated parser to
+yapps/runtime.py. It is provided by the yapps2-runtime package.
+You need to depend on this package if you Debianize Python programs that
+use yapps2.
+
+-- 
+Matthias Urlichs
