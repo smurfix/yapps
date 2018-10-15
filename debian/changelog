@@ -3,8 +3,13 @@ yapps2 (2.2.1-1) unstable; urgency=medium
   * New feature version
   * Don't try to run "bk".
   * Ignore built files
+  * Add manpage
+  * fix packaging
+  * convert to debhelper
+  * Clean up Lintian errors
+  * Add Py3 package
 
- -- Matthias Urlichs <matthias@urlichs.de>  Mon, 15 Oct 2018 11:24:39 +0200
+ -- Matthias Urlichs <smurf@debian.org>  Mon, 15 Oct 2018 11:24:39 +0200
 
 yapps2 (2.1.1-17.5) unstable; urgency=medium
 
