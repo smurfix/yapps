@@ -1,99 +1,21 @@
 #!/usr/bin/make -f
-# -*- makefile -*-
-# Sample debian/rules that uses debhelper.
-# GNU copyright 1997 to 1999 by Joey Hess.
 
-# Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
+export PYBUILD_NAME=yapps
 
-include /usr/share/python/python.mk
+%:
+	dh $@ --with python2,python3 --buildsystem=pybuild
 
-PWD=$(shell pwd)
-PYVER=$(shell pyversions -d)
-
-CFLAGS = -Wall -g
-
-ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
-	CFLAGS += -O0
-else
-	CFLAGS += -O2
-endif
-ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
-	INSTALL_PROGRAM += -s
-endif
-
-configure: configure-stamp
-configure-stamp:
-	dh_testdir
-	# Add here commands to configure the package.
-
-	touch configure-stamp
-
-
-build: build-stamp
-
-build-stamp: configure-stamp 
-	dh_testdir
-
-	# Add here commands to compile the package.
-	python setup.py build
-	#/usr/bin/docbook-to-man debian/yapps2.sgml > yapps.1
-	#cd doc && latex2html yapps2.tex
+override_dh_auto_build:
+	dh_auto_build
 	cd doc && hevea yapps2.tex
 	cd doc && hevea yapps2.tex # twice because of TOC
 
-	touch build-stamp
+override_dh_install:
+	mkdir -p debian/yapps2/usr/bin
+	mv debian/python3-yapps/usr/bin/yapps2 debian/yapps2/usr/bin
+	rm debian/python-yapps/usr/bin/yapps2
+	dh_install
 
-clean:
-	dh_testdir
-	dh_testroot
-	rm -f build-stamp configure-stamp
+override_dh_auto_test:
+	sh -x test.sh
 
-	rm -rf build debian/yapps2 doc/yapps2
-
-	dh_clean 
-
-install: build
-	dh_testdir
-	dh_testroot
-	dh_clean -k 
-	dh_installdirs
-	dh_installdirs -pyapps2-runtime usr/lib/$(PYVER)/${call py_sitename, ${PYVER}}/yapps
-
-	# Add here commands to install the package into debian/yapps.
-	python setup.py install --root=$(PWD)/debian/yapps2 --no-compile ${py_setup_install_args}
-	install -m 755 yapps2 debian/yapps2/usr/bin/yapps
-	install -m 755 doc/yapps2.html debian/yapps2/usr/share/doc/yapps2/
-	set -e; \
-	for f in runtime.py __init__.py; do \
-	    mv $(PWD)/debian/yapps2/usr/lib/$(PYVER)/${call py_sitename, ${PYVER}}/yapps/$$f \
-	        $(PWD)/debian/yapps2-runtime/usr/lib/$(PYVER)/${call py_sitename, ${PYVER}}/yapps/; \
-	done
-
-# Build architecture-independent files here.
-binary-indep: build install
-	dh_testdir
-	dh_testroot
-	dh_installchangelogs 
-	dh_installdocs 
-	dh_installexamples examples/* test yapps_grammar.g
-	dh_installman debian/yapps.1
-	find debian/yapps2/usr/share -name SCCS -print0 | xargs -0r rm -rf
-	dh_compress
-	dh_compress usr/share/doc/yapps2/NOTES
-	dh_fixperms
-#	dh_perl
-	dh_python2
-#	dh_makeshlibs
-	dh_installdeb
-	dh_shlibdeps
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
-
-# Build architecture-dependent files here.
-binary-arch: build install
-# We have nothing to do by default.
-
-binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install configure

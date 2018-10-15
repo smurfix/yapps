@@ -1,2 +1,10 @@
 /yapps2/
+/yapps2-runtime/
 /*.debhelper.log
+/files
+/python-yapps/
+/python3-yapps/
+/*.debhelper
+/*.substvars
+/files
+/*-stamp

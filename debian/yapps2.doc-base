@@ -2,10 +2,7 @@ Document: yapps2
 Title: Debian yapps Manual
 Author: Amit J. Patel <amitp@theory.stanford.edu>
 Abstract: This manual describes the YAPPS parser generator.
-Section: python
-
-Format: latex
-Files: /usr/share/doc/yapps2/yapps2.tex.gz
+Section: Programming/Python
 
 Format: HTML
 Index: /usr/share/doc/yapps2/yapps2.html

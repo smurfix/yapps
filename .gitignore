@@ -7,3 +7,7 @@
 *.pyo
 /examples/expr.py
 /*-stamp
+/doc/yapps2.haux
+/doc/yapps2.html
+/doc/yapps2.htoc
+/.pybuild
