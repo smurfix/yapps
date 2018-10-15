@@ -1,3 +1,9 @@
+yapps2 (2.1.1-18) unstable; urgency=medium
+
+  * Don't ry to run "bk".
+
+ -- Matthias Urlichs <matthias@urlichs.de>  Mon, 15 Oct 2018 11:24:39 +0200
+
 yapps2 (2.1.1-17.5) unstable; urgency=medium
 
   * Non-maintainer upload.

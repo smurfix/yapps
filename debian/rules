@@ -50,7 +50,6 @@ clean:
 	rm -f build-stamp configure-stamp
 
 	rm -rf build debian/yapps2 doc/yapps2
-	test -f changelog || bk changes > changelog
 
 	dh_clean 
 
