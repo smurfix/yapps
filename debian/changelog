@@ -1,3 +1,9 @@
+yapps2 (2.2.1-2) unstable; urgency=medium
+
+  * Add setuptools dependencies (closes: #912097).
+
+ -- Matthias Urlichs <matthias@urlichs.de>  Mon, 05 Nov 2018 07:26:11 +0100
+
 yapps2 (2.2.1-1) unstable; urgency=medium
 
   * New feature version
