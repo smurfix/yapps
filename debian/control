@@ -11,7 +11,8 @@ Standards-Version: 3.9.8
 
 Package: yapps2
 Architecture: all
-Depends: ${python:Depends}, python3-yapps (= ${binary:Version}), ${misc:Depends}
+Depends: ${python:Depends}, python3-yapps (= ${binary:Version}), ${misc:Depends},
+  python3-pkg-resources,
 Description: Yet Another Python Parser System
  YAPPS is an easy to use parser generator that is written in Python and
  generates Python code.  There are several parser generator systems
